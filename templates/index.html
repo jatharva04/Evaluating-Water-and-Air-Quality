@@ -1,0 +1,232 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Environmental Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <style>
+        :root {
+            --bg: #0f172a; --card: #111827; --text: #e5e7eb; --muted: #9ca3af; --accent: #38bdf8;
+            --air-color: #2ecc71; --water-color: #3498db;
+        }
+        * { box-sizing: border-box; }
+        body { margin: 0; background: var(--bg); color: var(--text);
+            font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }
+        header { padding: 18px 20px; border-bottom: 1px solid #1f2937; display: flex; align-items: center; gap: 12px; }
+        header h1 { margin: 0; font-size: 22px; letter-spacing: .2px; }
+        .container { 
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+        .card { 
+            background: var(--card);
+            border: 1px solid #1f2937;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,.25);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .card-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #1f2937;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .card-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+        .card-content {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            gap: 1rem;
+        }
+        .summary-block {
+            padding: 1rem;
+            background: #111827;
+            border-radius: 8px;
+            border: 1px solid #243045;
+        }
+        .summary-block .label {
+            font-size: 0.8rem;
+            color: var(--muted);
+            margin-bottom: 0.2rem;
+        }
+        .summary-block .value {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+        .aqi-color {
+            display: inline-block;
+            width: 1rem;
+            height: 1rem;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+        .button-link {
+            display: inline-block;
+            background-color: var(--accent);
+            color: var(--bg);
+            text-decoration: none;
+            text-align: center;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            margin-top: auto;
+        }
+        .map-wrapper {
+            height: 350px;
+            width: 100%;
+            border-bottom: 1px solid #1f2937;
+        }
+        .map-wrapper iframe {
+            border: none;
+            width: 100%;
+            height: 100%;
+        }
+        .aqi-status {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        .pollutant-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        select { 
+            background: #0b1220; 
+            color: var(--text); 
+            border: 1px solid #243045; 
+            border-radius: 10px; 
+            padding: 8px 10px; 
+            font-size: 14px; 
+            cursor: pointer;
+            width: auto;
+            max-width: 100%;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+        .controls {
+            padding: 0 1.5rem;
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🌍 Environmental Dashboard</h1>
+    </header>
+
+    <div class="container">
+        <div class="card air-card">
+            <div class="card-header">
+                <h2>Air Quality</h2>
+            </div>
+            <div class="map-wrapper">
+                {{ air_map_html|safe }}
+            </div>
+            <div class="controls">
+                <label class="muted">Location:</label>
+                <select id="locationSelect">
+                    </select>
+            </div>
+            <div class="card-content">
+                <div class="summary-block">
+                    <span id="aqi-color-dot" class="aqi-color"></span>
+                    <span id="air-location-name" class="aqi-status"></span>
+                </div>
+                <div id="air-pollutants" class="pollutant-list">
+                    </div>
+                <a href="/air_dashboard" class="button-link">View Full Dashboard</a>
+            </div>
+        </div>
+
+        <div class="card water-card">
+            <div class="card-header">
+                <h2>Water Quality</h2>
+            </div>
+            <div class="card-content">
+                <p class="muted">Live water quality data and reports will be available soon.</p>
+                <a href="/water_dashboard" class="button-link">View Water Dashboard</a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const LOCATIONS_DATA = JSON.parse('{{ locations_data|safe }}');
+        const INITIAL_AIR_DATA = JSON.parse('{{ initial_air_data|safe }}');
+
+        function aqiColor(aqiClass) {
+            const colors = {
+                1: "#2ecc71", 2: "#f1c40f", 3: "#e67e22",
+                4: "#e74c3c", 5: "#8e44ad"
+            };
+            return colors[aqiClass] || "#7f8c8d";
+        }
+
+        function updateAirCard(data) {
+            const locationNameEl = document.getElementById('air-location-name');
+            const aqiColorDotEl = document.getElementById('aqi-color-dot');
+            const pollutantsEl = document.getElementById('air-pollutants');
+
+            if (!data) {
+                locationNameEl.textContent = 'No data available';
+                aqiColorDotEl.style.backgroundColor = '#7f8c8d';
+                pollutantsEl.innerHTML = '';
+                return;
+            }
+
+            locationNameEl.textContent = `${data.full_name} - AQI ${data.aqi_now}`;
+            aqiColorDotEl.style.backgroundColor = aqiColor(data.aqi_now);
+            
+            pollutantsEl.innerHTML = `
+                <div class="summary-block"><div class="label">PM2.5</div><div class="value">${data.pollutants.pm2_5.toFixed(2)}</div></div>
+                <div class="summary-block"><div class="label">PM10</div><div class="value">${data.pollutants.pm10.toFixed(2)}</div></div>
+                <div class="summary-block"><div class="label">CO</div><div class="value">${data.pollutants.co.toFixed(2)}</div></div>
+                <div class="summary-block"><div class="label">NO2</div><div class="value">${data.pollutants.no2.toFixed(2)}</div></div>
+            `;
+        }
+        
+        function setupDropdown() {
+            const selectEl = document.getElementById('locationSelect');
+            if (LOCATIONS_DATA) {
+                LOCATIONS_DATA.forEach(loc => {
+                    const option = document.createElement('option');
+                    option.value = loc.id; // Use the URL-safe ID for the value
+                    option.textContent = loc.full_name; // Display the full name
+                    selectEl.appendChild(option);
+                });
+            }
+
+            if (INITIAL_AIR_DATA) {
+                selectEl.value = INITIAL_AIR_DATA.id;
+                updateAirCard(INITIAL_AIR_DATA);
+            }
+
+            selectEl.addEventListener('change', (e) => {
+                const selectedLocationId = e.target.value;
+                const selectedData = LOCATIONS_DATA.find(loc => loc.id == selectedLocationId);
+                if (selectedData) {
+                    updateAirCard(selectedData);
+                }
+            });
+        }
+        
+        document.addEventListener('DOMContentLoaded', setupDropdown);
+
+    </script>
+</body>
+</html>
