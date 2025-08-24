@@ -2,7 +2,7 @@ import os
 import math
 import json
 import requests
-import random
+import time
 from datetime import datetime, timedelta
 
 from flask import Flask, render_template, jsonify, request
@@ -14,10 +14,13 @@ import folium
 from folium import Map, CircleMarker, LayerControl
 from folium.plugins import HeatMapWithTime
 
-# =========================
-# 0) Setup Flask App
-# =========================
 app = Flask(__name__)
+
+# This dictionary will store our API results temporarily.
+CACHE = { "data": None, "timestamp": None }
+CACHE_DURATION_MINUTES = 15
+
+API_KEY = "6a10ef7f599b4187e0cd396738b9fa41"
 
 # =========================
 # 1) Load models and data
@@ -79,15 +82,26 @@ def add_time_features(d: dict) -> dict:
     return out
 
 def get_realtime_pollutants(lat: float, lon: float) -> dict:
-    """Generates varied data for predictions."""
-    return {
-        "co": random.uniform(50.0, 300.0),
-        "no2": random.uniform(5.0, 50.0),
-        "o3": random.uniform(10.0, 80.0),
-        "so2": random.uniform(1.0, 15.0),
-        "pm2_5": random.uniform(5.0, 25.0),
-        "pm10": random.uniform(10.0, 40.0),
-    }
+    """Fetches real, live air pollution data from the OpenWeather API."""
+    api_url = "http://api.openweathermap.org/data/2.5/air_pollution"
+    params = {'lat': lat, 'lon': lon, 'appid': API_KEY}
+
+    default_pollutants = {"co": 0, "no2": 0, "o3": 0, "so2": 0, "pm2_5": 0, "pm10": 0}
+
+    try:
+        response = requests.get(api_url, params=params)
+        response.raise_for_status()
+        data = response.json()
+        
+        if data and 'list' in data and data['list']:
+            return data['list'][0]['components']
+        else:
+            return default_pollutants
+
+    except requests.exceptions.RequestException as e:
+        print(f"API Error fetching OpenWeather data for lat={lat}, lon={lon}: {e}")
+        return default_pollutants
+
 
 def rf_predict_now(features: dict) -> int:
     """Uses the Random Forest model to predict the current AQI."""
@@ -102,14 +116,27 @@ def lgb_predict_future(features: dict) -> dict:
     preds = lgb_model.predict(X)[0]
     return {f"{h}h": int(preds[i]) for i, h in enumerate(lgb_horizons)}
 
+# Step 1 : loop through each location
 def predict_all_locations():
     """Predicts current and future AQI for all hardcoded locations."""
+    global CACHE
+
+    # Check if we have valid, recent data in our cache
+    if CACHE["data"] and CACHE["timestamp"]:
+        age = datetime.now() - CACHE["timestamp"]
+        if age < timedelta(minutes=CACHE_DURATION_MINUTES):
+            print("Serving data from cache...")
+            return CACHE["data"]
+
+    # If cache is empty or old, fetch new data from the API
+    print("Cache is old or empty. Fetching new data from API...")
     results = []
     for loc in LOCATIONS:
         base_pollutants = get_realtime_pollutants(loc["lat"], loc["lon"])
         feat = {"latitude": loc["lat"], "longitude": loc["lon"], **base_pollutants}
         aqi_now = rf_predict_now(feat)
         forecast = lgb_predict_future(feat)
+        
         results.append({
             "id": loc["id"],
             "full_name": loc["full_name"],
@@ -119,6 +146,12 @@ def predict_all_locations():
             "forecast": forecast,
             "pollutants": base_pollutants
         })
+        time.sleep(0.1)
+
+    # Save the new results and the current time to the cache
+    CACHE["data"] = results
+    CACHE["timestamp"] = datetime.now()
+    
     return results
 
 def build_map_for_card():
