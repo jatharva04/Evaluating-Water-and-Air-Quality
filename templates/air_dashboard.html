@@ -4,8 +4,7 @@
     <meta charset="utf-8"/>
     <title>AQI Dashboard — Now & 72h Forecast</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-    <style>
+<style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         
         :root {
@@ -276,8 +275,36 @@
         * {
             transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
         }
+        /* NEW STYLES for recommendations and LIME */
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 24px;
+        }
+        .recommendations ul, .lime-explanation ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .recommendations li {
+            background: var(--surface);
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 1px solid var(--card-border);
+            font-size: 15px;
+        }
+        .lime-explanation li {
+            font-family: 'Courier New', Courier, monospace;
+            background: var(--surface);
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
     </style>
-
     <script src="https://cdn.jsdelivr.net/npm/luxon@3.4.4/build/global/luxon.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1.3.1/dist/chartjs-adapter-luxon.umd.min.js"></script>
@@ -290,9 +317,7 @@
     <div class="container">
         <div class="card">
             <div class="section-title">Animated Heatmap (3h → 72h) + Current AQI Markers</div>
-            <div class="map-wrap">
-                {{ map_html|safe }}
-            </div>
+            <div class="map-wrap">{{ map_html|safe }}</div>
             <div class="controls">
                 <div class="legend">
                     <span class="dot" style="background:var(--good)"></span> <span>Good (1)</span>
@@ -305,7 +330,6 @@
         </div>
 
         <div class="card">
-            <div class="section-title">72h Forecast — Time Series</div>
             <div class="controls">
                 <label class="muted">Location:</label>
                 <select id="locationSelect">
@@ -318,8 +342,55 @@
                 <canvas id="chart"></canvas>
             </div>
         </div>
-        
-        <div class="card">
+
+        <div class="details-grid">
+            <div class="card recommendations">
+                <div class="section-title">Health Recommendations</div>
+                <div id="recommendations-content">
+                   {% if initial_details and initial_details.recommendations.general %}
+    
+    <h4>{{ initial_details.recommendations.general.title }}</h4>
+    <p>{{ initial_details.recommendations.general.advice }}</p>
+    
+    {% if initial_details.recommendations.smart %}
+        <h5>Key Factors:</h5>
+        <ul>
+            {% for item in initial_details.recommendations.smart %}
+                <li>{{ item|safe }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    {% if initial_details.recommendations.contextual %}
+         <h5>Context:</h5>
+        <ul>
+            {% for item in initial_details.recommendations.contextual %}
+                <li>{{ item|safe }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+{% else %}
+    <p class="muted">No recommendations available.</p>
+{% endif %}
+                </div>
+            </div>
+            <div class="card lime-explanation">
+                <div class="section-title">LIME: Why this prediction?</div>
+                <div id="lime-content">
+                    {% if initial_details and initial_details.lime_explanation %}
+                        <ul>
+                            {% for rule in initial_details.lime_explanation %}
+                                <li>{{ rule[0] }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="muted">No LIME explanation available.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+  <div class="card">
             <div class="section-title">Current AQI (Now)</div>
             <div class="locations">
                 {% for p in locations %}
@@ -336,145 +407,96 @@
 
     <script>
         const initialSeries = JSON.parse('{{ chart_series|safe }}');
-        
         let myChart;
 
         function drawChart(series, title) {
+            // ... (Your existing drawChart function remains unchanged)
             series.sort((a, b) => new Date(a.ts) - new Date(b.ts));
-            
-            const x_labels = series.map(d => d.ts);
-            const y_data = series.map(d => d.aqi);
-            
-            if (myChart) {
-                myChart.destroy();
-            }
-
+            const x_labels = series.map(d => d.ts); const y_data = series.map(d => d.aqi);
+            if (myChart) { myChart.destroy(); }
             const ctx = document.getElementById('chart');
-
             myChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: x_labels,
-                    datasets: [{
-                        label: 'AQI Class',
-                        data: y_data,
-                        borderColor: '#38bdf8',
-                        backgroundColor: 'rgba(56, 189, 248, 0.1)',
-                        pointStyle: 'circle',
-                        pointRadius: 6,
-                        pointHoverRadius: 10,
-                        pointBackgroundColor: '#38bdf8',
-                        pointBorderColor: '#ffffff',
-                        pointBorderWidth: 2,
-                        tension: 0.4,
-                        fill: true,
-                        borderWidth: 3
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        title: {
-                            display: true,
-                            text: title,
-                            color: '#f8fafc',
-                            font: {
-                                size: 16,
-                                weight: '600'
-                            },
-                            padding: 20
-                        }
-                    },
-                    scales: {
-                        y: {
-                            title: {
-                                display: true,
-                                text: 'AQI Class (1-5)',
-                                color: '#cbd5e1',
-                                font: {
-                                    size: 14,
-                                    weight: '500'
-                                }
-                            },
-                            min: 0.8,
-                            max: 5.2,
-                            ticks: {
-                                stepSize: 1,
-                                color: '#94a3b8',
-                                font: {
-                                    size: 12
-                                }
-                            },
-                            grid: {
-                                color: 'rgba(55, 65, 81, 0.3)',
-                                drawBorder: false
-                            }
-                        },
-                        x: {
-                            type: 'time',
-                            time: {
-                                unit: 'hour',
-                                tooltipFormat: 'dd MMM, HH:mm',
-                                displayFormats: {
-                                    hour: 'EEE, HH:mm'
-                                }
-                            },
-                            title: {
-                                display: true,
-                                text: 'Time (next 72h)',
-                                color: '#cbd5e1',
-                                font: {
-                                    size: 14,
-                                    weight: '500'
-                                }
-                            },
-                            ticks: {
-                                color: '#94a3b8',
-                                font: {
-                                    size: 12
-                                }
-                            },
-                            grid: {
-                                color: 'rgba(55, 65, 81, 0.3)',
-                                drawBorder: false
-                            }
-                        }
-                    },
-                    interaction: {
-                        intersect: false,
-                        mode: 'index'
-                    }
-                }
+                type: 'line', data: { labels: x_labels, datasets: [{ label: 'AQI Class', data: y_data, borderColor: '#38bdf8', backgroundColor: 'rgba(56, 189, 248, 0.1)', pointStyle: 'circle', pointRadius: 6, pointHoverRadius: 10, pointBackgroundColor: '#38bdf8', pointBorderColor: '#ffffff', pointBorderWidth: 2, tension: 0.4, fill: true, borderWidth: 3 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, title: { display: true, text: title, color: '#f8fafc', font: { size: 16, weight: '600' }, padding: 20 } }, scales: { y: { title: { display: true, text: 'AQI Class (1-5)', color: '#cbd5e1', font: { size: 14, weight: '500' } }, min: 0.8, max: 5.2, ticks: { stepSize: 1, color: '#94a3b8', font: { size: 12 } }, grid: { color: 'rgba(55, 65, 81, 0.3)', drawBorder: false } }, x: { type: 'time', time: { unit: 'hour', tooltipFormat: 'dd MMM, HH:mm', displayFormats: { hour: 'EEE, HH:mm' } }, title: { display: true, text: 'Time (next 72h)', color: '#cbd5e1', font: { size: 14, weight: '500' } }, ticks: { color: '#94a3b8', font: { size: 12 } }, grid: { color: 'rgba(55, 65, 81, 0.3)', drawBorder: false } } }, interaction: { intersect: false, mode: 'index' } }
             });
         }
-
+        
         drawChart(initialSeries, "Forecast — {{ default_location_name }}");
 
+        // NEW: Functions to update the new UI sections
+        function updateRecommendations(data) {
+            const container = document.getElementById('recommendations-content');
+            container.innerHTML = ''; // Clear previous content
+            if (data.recommendations) {
+                const ul = document.createElement('ul');
+                data.recommendations.general.forEach(item => {
+                    const li = document.createElement('li');
+                    li.textContent = item;
+                    ul.appendChild(li);
+                });
+                data.recommendations.smart.forEach(item => {
+                    const li = document.createElement('li');
+                    li.textContent = item;
+                    ul.appendChild(li);
+                });
+                container.appendChild(ul);
+            } else {
+                container.innerHTML = '<p class="muted">No recommendations available.</p>';
+            }
+        }
+        
+        function updateLimeExplanation(data) {
+            const container = document.getElementById('lime-content');
+            container.innerHTML = ''; // Clear previous content
+            if (data.lime_explanation && data.lime_explanation.length > 0) {
+                const ul = document.createElement('ul');
+                data.lime_explanation.forEach(rule => {
+                    const li = document.createElement('li');
+                    li.textContent = rule[0]; // LIME rules are nested in lists
+                    ul.appendChild(li);
+                });
+                container.appendChild(ul);
+            } else {
+                container.innerHTML = '<p class="muted">No LIME explanation available.</p>';
+            }
+        }
+
+        // Add event listener to handle updates for all sections
         document.getElementById("locationSelect").addEventListener("change", async (e) => {
             const id = e.target.value;
             const chartContainer = document.querySelector('.chart-container');
+            const recsContainer = document.querySelector('.recommendations');
+            const limeContainer = document.querySelector('.lime-explanation');
             
+            // Show loading state on all cards that will be updated
             chartContainer.classList.add('loading');
+            recsContainer.classList.add('loading');
+            limeContainer.classList.add('loading');
             
+            // --- 1. Fetch data for the chart ---
             try {
                 const res = await fetch(`/api/forecast_series?id=${encodeURIComponent(id)}`);
-                if (!res.ok) {
-                    throw new Error(`Failed to fetch forecast for ID: ${id}. Status: ${res.status}`);
-                }
+                if (!res.ok) throw new Error(`Chart fetch failed: ${res.status}`);
                 const data = await res.json();
                 if (data.ok) {
                     drawChart(data.series, `Forecast — ${data.name}`);
-                } else {
-                    console.error("API Error:", data.error || "Invalid response from server.");
-                }
-            } catch (err) {
-                console.error("Network or fetch error:", err);
-            } finally {
-                chartContainer.classList.remove('loading');
+                } else { console.error("API Error:", data.error); }
+            } catch (err) { console.error("Network or fetch error:", err); } 
+            finally { chartContainer.classList.remove('loading'); }
+
+            // --- 2. Fetch data for the details (LIME, Recommendations) ---
+            try {
+                const res = await fetch(`/api/location_details?id=${encodeURIComponent(id)}`);
+                if (!res.ok) throw new Error(`Details fetch failed: ${res.status}`);
+                const data = await res.json();
+                if (data.ok) {
+                    updateRecommendations(data);
+                    updateLimeExplanation(data);
+                } else { console.error("API Error:", data.error); }
+            } catch (err) { console.error("Network or fetch error:", err); }
+            finally { 
+                recsContainer.classList.remove('loading');
+                limeContainer.classList.remove('loading');
             }
         });
     </script>
