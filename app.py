@@ -2,6 +2,8 @@ import os
 import math
 import json
 import random
+import requests
+import time
 from datetime import datetime, timedelta
 
 from flask import Flask, render_template, jsonify, request
@@ -17,6 +19,11 @@ import shap
 import lime
 import lime.lime_tabular
 
+# This dictionary will store our API results temporarily.
+CACHE = { "data": None, "timestamp": None }
+CACHE_DURATION_MINUTES = 15
+API_KEY = "6a10ef7f599b4187e0cd396738b9fa41"
+
 # =========================
 # 0) Setup Flask App
 # =========================
@@ -28,6 +35,10 @@ app = Flask(__name__)
 MODEL_PATH = os.path.join("models", "random_forest_aqi.pkl")
 LGB_BUNDLE_PATH = os.path.join("models", "lightgbm_multi.pkl")
 LOCATIONS_CSV = "locations.csv"
+
+# Check if files exist before loading
+if not os.path.exists(MODEL_PATH) or not os.path.exists(LGB_BUNDLE_PATH) or not os.path.exists(LOCATIONS_CSV):
+    raise FileNotFoundError("One or more required files (models or locations.csv) are missing.")
 
 # --- Load the final chosen model ---
 print("Loading final classifier model...")
@@ -86,12 +97,25 @@ def add_time_features(d: dict) -> dict:
     return out
 
 def get_realtime_pollutants(lat: float, lon: float) -> dict:
-    """Generates varied data for predictions."""
-    return {
-        "co": random.uniform(50.0, 400.0), "no2": random.uniform(5.0, 60.0),
-        "o3": random.uniform(10.0, 90.0), "so2": random.uniform(1.0, 20.0),
-        "pm2_5": random.uniform(5.0, 75.0), "pm10": random.uniform(10.0, 100.0),
-    }
+    """Fetches real, live air pollution data from the OpenWeather API."""
+    api_url = "http://api.openweathermap.org/data/2.5/air_pollution"
+    params = {'lat': lat, 'lon': lon, 'appid': API_KEY}
+
+    default_pollutants = {"co": 0, "no2": 0, "o3": 0, "so2": 0, "pm2_5": 0, "pm10": 0}
+
+    try:
+        response = requests.get(api_url, params=params)
+        response.raise_for_status()
+        data = response.json()
+        
+        if data and 'list' in data and data['list']:
+            return data['list'][0]['components']
+        else:
+            return default_pollutants
+
+    except requests.exceptions.RequestException as e:
+        print(f"API Error fetching OpenWeather data for lat={lat}, lon={lon}: {e}")
+        return default_pollutants
 
 def get_shap_explanation(features_df: pd.DataFrame) -> list:
     """Generates SHAP explanation for the classifier's prediction."""
@@ -211,24 +235,29 @@ def get_recommendations(aqi_class: int, shap_explanation: list) -> dict:
     return recommendations
 
 def predict_all_locations():
-    """Predicts AQI and generates explanations for all locations using the final classifier."""
+    """Predicts current and future AQI for all hardcoded locations."""
+    global CACHE
+
+    # Check if we have valid, recent data in our cache
+    if CACHE["data"] and CACHE["timestamp"]:
+        age = datetime.now() - CACHE["timestamp"]
+        if age < timedelta(minutes=CACHE_DURATION_MINUTES):
+            print("Serving data from cache...")
+            return CACHE["data"]
+
+    # If cache is empty or old, fetch new data from the API
+    print("Cache is old or empty. Fetching new data from API...")
     results = []
     for loc in LOCATIONS:
         base_pollutants = get_realtime_pollutants(loc["lat"], loc["lon"])
         feat_dict = {"latitude": loc["lat"], "longitude": loc["lon"], **base_pollutants}
         timed_feat = add_time_features(feat_dict)
-        
         X_raw = pd.DataFrame([timed_feat]).reindex(columns=MODEL_FEATURES, fill_value=0)
-        
         aqi_now = int(final_model.predict(X_raw)[0])
-        
         forecast = lgb_predict_future(timed_feat)
-        
         shap_explanation = get_shap_explanation(X_raw)
         lime_explanation = get_lime_explanation(X_raw)
-        
         recommendations = get_recommendations(aqi_now, shap_explanation)
-        
         results.append({
             "id": loc["id"], "full_name": loc["full_name"], "lat": loc["lat"], "lon": loc["lon"],
             "aqi_now": aqi_now, "forecast": forecast, "pollutants": base_pollutants,
@@ -236,6 +265,11 @@ def predict_all_locations():
             "lime_explanation": lime_explanation,
             "recommendations": recommendations
         })
+        time.sleep(0.1)
+
+    # Save the new results and the current time to the cache
+    CACHE["data"] = results
+    CACHE["timestamp"] = datetime.now()
     return results
 
 def lgb_predict_future(features: dict) -> dict:
@@ -245,11 +279,14 @@ def lgb_predict_future(features: dict) -> dict:
     return {f"{h}h": int(p) for h, p in zip(lgb_horizons, preds)}
 
 def build_map_for_card():
+    """Builds a static Folium map for the landing page card."""
     all_preds = predict_all_locations()
-    if not all_preds: return ""
+    if not all_preds: 
+        return ""
     center_lat = float(np.mean([p["lat"] for p in all_preds]))
     center_lon = float(np.mean([p["lon"] for p in all_preds]))
     m = Map(location=[center_lat, center_lon], zoom_start=10, tiles="cartodbpositron")
+
     for p in all_preds:
         CircleMarker(
             location=[p["lat"], p["lon"]], radius=16, color=aqi_color(p["aqi_now"]),
@@ -258,11 +295,14 @@ def build_map_for_card():
     return m._repr_html_()
 
 def build_full_dashboard_map():
+    """Builds the full-screen map with heatmap for the dashboard page."""
     all_preds = predict_all_locations()
-    if not all_preds: return ""
+    if not all_preds: 
+        return ""
     center_lat = float(np.mean([p["lat"] for p in all_preds]))
     center_lon = float(np.mean([p["lon"] for p in all_preds]))
     m = Map(location=[center_lat, center_lon], zoom_start=10, tiles="cartodbpositron")
+
     for p in all_preds:
         col = aqi_color(p["aqi_now"])
         tooltip_text = f"<b>{p['full_name']}</b><br>AQI (now): <b>{p['aqi_now']}</b>"
@@ -288,7 +328,9 @@ def build_full_dashboard_map():
     return m._repr_html_()
 
 def build_plotly_series(pred_for_loc: dict):
-    if not pred_for_loc: return []
+    """Formats a single location's forecast data for Plotly chart."""
+    if not pred_for_loc: 
+        return []
     series = []
     now = datetime.now()
     for h, aqi in pred_for_loc["forecast"].items():
@@ -300,7 +342,8 @@ def build_plotly_series(pred_for_loc: dict):
 # 3) Routes
 # =========================
 @app.route("/")
-def landing_page(): return render_template("front_page.html")
+def landing_page(): 
+    return render_template("front_page.html")
 
 @app.route("/dashboard")
 def dashboard():
@@ -308,8 +351,10 @@ def dashboard():
     air_card_map = build_map_for_card()
     initial_data = all_preds[0] if all_preds else None
     return render_template(
-        "index.html", air_map_html=air_card_map,
-        locations_data=json.dumps(all_preds), initial_air_data=json.dumps(initial_data)
+        "index.html", 
+        air_map_html=air_card_map,
+        locations_data=json.dumps(all_preds), 
+        initial_air_data=json.dumps(initial_data)
     )
 
 @app.route("/air_dashboard")
@@ -331,15 +376,18 @@ def air_dashboard():
 @app.route("/api/forecast_series")
 def api_forecast_series():
     id = request.args.get("id", "").strip()
-    if not id: return jsonify({"ok": False, "error": "Missing 'id'"}), 400
+    if not id: 
+        return jsonify({"ok": False, "error": "Missing 'id'"}), 400
     all_preds = predict_all_locations()
     loc = next((p for p in all_preds if str(p["id"]) == id), None)
-    if not loc: return jsonify({"ok": False, "error": "Location not found"}), 404
+    if not loc: 
+        return jsonify({"ok": False, "error": "Location not found"}), 404
     return jsonify({"ok": True, "name": loc['full_name'], "series": build_plotly_series(loc)})
 
 
 @app.route("/water_dashboard")
-def water_dashboard(): return "<h1>Water Dashboard</h1><p>work in progress!</p>"
+def water_dashboard(): 
+    return "<h1>Water Dashboard</h1><p>work in progress!</p>"
 
 if __name__ == "__main__":
     app.run(debug=True)
