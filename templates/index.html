@@ -173,8 +173,8 @@
     </div>
     
     <script>
-        const LOCATIONS_DATA = JSON.parse('{{ locations_data|safe }}');
-        const INITIAL_AIR_DATA = JSON.parse('{{ initial_air_data|safe }}');
+        const LOCATIONS_DATA = {{ locations_data|tojson }} || [];
+        const INITIAL_AIR_DATA = {{ initial_air_data|tojson }} || null;
 
         let shapChart;
 
