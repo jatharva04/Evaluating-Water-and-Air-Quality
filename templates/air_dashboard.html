@@ -410,7 +410,6 @@
         let myChart;
 
         function drawChart(series, title) {
-            // ... (Your existing drawChart function remains unchanged)
             series.sort((a, b) => new Date(a.ts) - new Date(b.ts));
             const x_labels = series.map(d => d.ts); const y_data = series.map(d => d.aqi);
             if (myChart) { myChart.destroy(); }
@@ -423,7 +422,7 @@
         
         drawChart(initialSeries, "Forecast — {{ default_location_name }}");
 
-        // NEW: Functions to update the new UI sections
+        // Functions to update the new UI sections
         function updateRecommendations(data) {
             const container = document.getElementById('recommendations-content');
             container.innerHTML = ''; // Clear previous content

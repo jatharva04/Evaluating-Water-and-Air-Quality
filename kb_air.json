@@ -1,0 +1,89 @@
+{
+    "AQI": "Air Quality Indexes (AQIs) help your user understand air quality data in a more intuitive way by categorizing pollutant concentrations, usually averaged across specific timeframes, according to specific scales. Using air pollution monitoring sensors empowers individuals to avoid outdoor activity when necessary, switch to cleaner transport options, and make more informed, health-conscious choices.",
+
+    "pm2.5": {
+        "info": "Particulate Matter 2.5 (PM₂.₅) are fine particles with diameters less than 2.5 micrometers. WHO has set the standard of the average daily concentration of PM2.5 suspended particulate matter at 25 micrograms per cubic meter, and the annual standard is 10 micrograms per cubic meter. Main sources are combustion processes (e.g. power plants, indoor heating, car exhausts, wildfires), mechanical processes (e.g. construction, mineral dust) and biological particles (e.g. bacteria, viruses).",
+        "effects": "Health effects of PM₂.₅ are serious. Fine particles can penetrate into the lungs and bloodstream. Short term exposure can cause irritation of the airways, coughing and aggravation of heart and lung diseases, expressed as difficulty breathing, heart attacks and even premature death."
+    },
+    "pm10": {
+        "info": "Particulate Matter 10 (PM10) are airborne particles that do not exceed 10 micrometers in diameter. According to the WHO, the limit value of the average daily concentration of this particulate matter is 50 micrograms per cubic meter, and the annual limit value is 20 micrograms per cubic meter. Main sources are combustion processes (e.g. indoor heating, wildfires), mechanical processes (e.g. construction, mineral dust, agriculture) and biological particles (e.g. pollen, bacteria, mold).",
+        "effects": "Health effects of PM₂.₅ are serious. Inhalable particles can penetrate into the lungs. Short term exposure can cause irritation of the airways, coughing, and aggravation of heart and lung diseases, expressed as difficulty breathing, heart attacks and even premature death."
+    },
+
+    "o3" : {
+        "info": "O3 is ozone, a gas composed of three oxygen atoms that acts as both a protective layer in the upper atmosphere and a harmful pollutant at ground level, where it is a primary component of smog. It is formed by a complex reaction between nitrogen dioxide and hydrocarbons in the presence of sunlight.",
+        "effects": "Ozone can irritate the airways and cause coughing, a burning sensation, wheezing and shortness of breath. Additionally, ozone is one of the major components of photochemical smog."
+    },
+
+    "co" : {
+        "info": "Carbon monoxide (CO) is a poisonous, flammable gas that is colorless, odorless, tasteless, and slightly less dense than air. It is a temporary atmospheric pollutant in some urban areas. It typically originates from incomplete combustion of carbon fuels, such as that which occurs in car engines and power plants.",
+        "effects": "When inhaled, carbon monoxide can prevent the blood from carrying oxygen. Exposure may cause dizziness, nausea and headaches. Exposure to extreme concentrations can lead to loss of consciousness."
+    },
+
+    "no2" : {
+        "info": "Nitrogen Dioxide (NO2) is one of a group of highly reactive gases known as oxides of nitrogen or nitrogen oxides (NOx). It is poisonous and can be fatal if inhaled in large quantities. Main sources are fuel burning processes, such as those used in industry and transportation.",
+        "effects": "Exposure may cause increased bronchial reactivity in patients with asthma, lung function decline in patients with Chronic Obstructive Pulmonary Disease (COPD), and increased risk of respiratory infections, especially in young children."
+    },
+    
+    "so2" : {
+        "info": "Sulfur dioxide (SO2) is a gaseous air pollutant composed of sulfur and oxygen. Main sources are burning processes of sulfur-containing fuel in industry, transportation and power plants.",
+        "effects": "Exposure causes irritation of the respiratory tract, coughing and generates local inflammatory reactions. These in turn, may cause aggravation of lung diseases, even with short term exposure."
+    },
+
+    "pollutants": "Pollutants are particles and gasses in the air that, in high concentration, can be harmful to people's health. Air Quality includes detailed descriptions of each pollutant to help people understand the source of emissions and health effects. the six included pollutants are: Ozone (O3) Sulfur Dioxide (SO2) Carbon Monoxide (CO) Nitrogen Dioxide (NO2) Fine Particulate Matter (PM2.5) Fine & Coarse Particulate Matter (PM10)",
+
+    "sensors": "These devices use laser and an electrochemical methodsto detect pollutants like PM2.5 and ozone. Readings are obtained using the two cells installed in the sensor’s gas module. Each cell has a special diode whose colours alter depending on the current air quality. A user who has necessary instructions knows how to interpret received messages",
+
+    "sources_air": "Air pollution is contamination of the indoor or outdoor environment by any chemical, physical or biological agent that modifies the natural characteristics of the atmosphere. Household combustion devices, motor vehicles, industrial facilities and forest fires are common sources of air pollution. ",
+
+    "how_aqi_calculated": "The AQI is calculated based on the concentration of five major pollutants: Ground-level Ozone (O₃), Particulate Matter (PM₂.₅ and PM₁₀), Carbon Monoxide (CO), and Sulfur Dioxide (SO₂). The highest individual pollutant score becomes the overall AQI for that hour.",
+
+    "aqi_standards_india": "The Central Pollution Control Board (CPCB), under the authority of the Air (Prevention and Control of Pollution) Act, 1981, sets India's air quality standards and is responsible for developing and managing the National Ambient Air Quality Standards (NAAQS) and the Air Quality Index (AQI). The Ministry of Environment, Forest and Climate Change (MoEFCC) also plays a role in establishing and updating these standards, often with input from experts from institutions like Indian Institutes of Technology (IITs).",
+    "smog": "Smog is a type of air pollution that looks like a hazy, smoky fog. The word itself comes from “smoke” + “fog.”. Smog forms when pollutants in the air mix with weather conditions (like fog, sunlight, or temperature inversions)",
+    "winter": "Cold air is denser and moves slower than warm air. This density means that cold air traps the pollution but also doesn’t whisk it away. Air pollution in winter remains in place for much longer and therefore is breathed in at a higher rate than during the summer. Smog remains a huge concern in large cities throughout winter. ",
+    "rain": "Yes, rain significantly improves air quality. Raindrops capture and wash away particulate matter and other pollutants from the atmosphere, leading to a lower AQI.",
+    "diwali": "During Diwali, the widespread use of firecrackers releases large amounts of pollutants like Sulphur Dioxide and particulate matter, causing a sharp spike in the AQI.",
+    "trees": "Yes, planting trees significantly helps improve AQI. They absorb pollutant gases and filter particulate matter from the air.",
+
+    "children": "For children, it's especially important to limit outdoor playtime when AQI is above 100. Their lungs are still developing and are more sensitive to pollutants.",
+    "elderly people": "Elderly people should avoid heavy exertion outdoors when the AQI is 'Moderate' or worse. It's best to stay inside in a clean environment.",
+    "skin rashes": "While less common, some pollutants can cause skin irritation. If you experience rashes after exposure to poor quality water or air, it's best to consult a doctor.",
+
+  "good": {
+    "definition": "An AQI from 0-50 is 'Good'. The air quality is excellent and poses little to no health risk.",
+    "recommendation": "It's a great day for all outdoor activities. Enjoy the fresh air!"
+  },
+  "satisfactory": {
+    "definition": "An AQI from 51-100 is 'Satisfactory'. Air quality is acceptable; however, there may be a moderate health concern for a very small number of people unusually sensitive to air pollution.",
+    "recommendation": "It's generally safe to be outside. Unusually sensitive individuals should consider reducing intense outdoor exertion."
+  },
+  "moderate": {
+    "definition": "An AQI from 101-200 is 'Moderate'. Members of sensitive groups may experience health effects. The general public is not likely to be affected.",
+    "recommendation": "Sensitive groups (children, elderly, people with respiratory issues) should reduce prolonged or heavy exertion outdoors."
+  },
+  "poor": {
+    "definition": "An AQI from 201-300 is 'Poor'. Everyone may begin to experience health effects.",
+    "recommendation": "Sensitive groups should avoid all outdoor activity. Everyone else should reduce heavy exertion outside. Consider wearing a mask."
+  },
+  "very_poor": {
+    "definition": "An AQI from 301-400 is 'Very Poor'. This is a health alert, meaning everyone may experience more serious health effects.",
+    "recommendation": "Everyone should avoid prolonged or heavy outdoor exertion. It's recommended to stay indoors as much as possible."
+  },
+  "severe": {
+    "definition": "An AQI above 400 is 'Severe'. This is a health warning of emergency conditions where the entire population is likely to be affected.",
+    "recommendation": "This is a health emergency. Everyone should avoid all outdoor activity. Remain indoors, keep windows closed, and run an air purifier if available."
+  },
+  "air_purifiers": {
+    "info": "Yes, air purifiers with HEPA filters are effective at removing particulate matter like PM₂.₅ from the air inside your home."
+  },
+  "child": {
+    "recommendation": "Children are more vulnerable to air pollution. It's best to keep them indoors when the AQI is above 100 ('Moderate')."
+  },
+  "asthma": {
+    "recommendation": "For people with asthma, it is crucial to stay indoors on high AQI days, use an air purifier, and always carry an inhaler when stepping out."
+  },
+  "default_recommendation": "As a general rule, limit your time outdoors on high AQI days and wear an N95 mask if you must go out.",
+  "colors_explanation": "The AQI colors range from Green (Good) to Maroon (Severe), representing increasing health risk. For example, Green (0-50) is safe, while Red (201-300) indicates 'Poor' air quality.",
+  "levels_explanation": "The AQI scale has six levels: Good, Satisfactory, Moderate, Poor, Very Poor, and Severe. Each corresponds to a different level of health concern.",
+  "default_explanation": "The Air Quality Index (AQI) is a scale used to communicate how polluted the air is. I can explain specific values, levels, or colors."
+}

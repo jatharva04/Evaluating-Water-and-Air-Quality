@@ -1,468 +1,472 @@
-<!doctype html>
-<html>
-<head>
-    <meta charset="utf-8"/>
-    <title>AI Air & Water Monitoring</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap');
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+{% extends "base.html" %}
 
-        :root {
-            --primary-bg: #0a0a0f;
-            --secondary-bg: #1a1a2e;
-            --accent-blue: #00d4ff;
-            --accent-green: #00ff88;
-            --accent-purple: #8b5cf6;
-            --text-primary: #ffffff;
-            --text-secondary: #a8b2d1;
-            --glass-bg: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.1);
-        }
+{% block page_specific_css %}
 
-        body {
-            background: linear-gradient(135deg, var(--primary-bg) 0%, var(--secondary-bg) 100%);
-            color: var(--text-primary);
-            font-family: 'Inter', sans-serif;
-            overflow-x: hidden;
-            min-height: 100vh;
-            position: relative;
-        }
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap');
+    
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
 
-        /* Animated background particles */
-        .bg-animation {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-        }
+    :root {
+        --primary-bg: #0a0a0f;
+        --secondary-bg: #1a1a2e;
+        --accent-blue: #00d4ff;
+        --accent-green: #00ff88;
+        --accent-purple: #8b5cf6;
+        --text-primary: #ffffff;
+        --text-secondary: #a8b2d1;
+        --glass-bg: rgba(255, 255, 255, 0.05);
+        --glass-border: rgba(255, 255, 255, 0.1);
+    }
 
-        .particle {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            background: var(--accent-blue);
-            border-radius: 50%;
-            animation: float 6s ease-in-out infinite;
-            opacity: 0.6;
-        }
+    body {
+        background: linear-gradient(135deg, var(--primary-bg) 0%, var(--secondary-bg) 100%);
+        color: var(--text-primary);
+        font-family: 'Inter', sans-serif;
+        overflow-x: hidden;
+        min-height: 100vh;
+        position: relative;
+    }
 
-        .particle:nth-child(2n) {
-            background: var(--accent-green);
-            animation-duration: 8s;
-            animation-delay: -2s;
-        }
+    /* Animated background particles */
+    .bg-animation {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 0;
+    }
 
-        .particle:nth-child(3n) {
-            background: var(--accent-purple);
-            animation-duration: 10s;
-            animation-delay: -4s;
-        }
+    .particle {
+        position: absolute;
+        width: 4px;
+        height: 4px;
+        background: var(--accent-blue);
+        border-radius: 50%;
+        animation: float 6s ease-in-out infinite;
+        opacity: 0.6;
+    }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.6; }
-            50% { transform: translateY(-20px) rotate(180deg); opacity: 1; }
-        }
+    .particle:nth-child(2n) {
+        background: var(--accent-green);
+        animation-duration: 8s;
+        animation-delay: -2s;
+    }
 
-        /* Glowing orbs */
-        .orb {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(1px);
-            animation: pulse 4s ease-in-out infinite;
-        }
+    .particle:nth-child(3n) {
+        background: var(--accent-purple);
+        animation-duration: 10s;
+        animation-delay: -4s;
+    }
 
-        .orb-1 {
-            width: 300px;
-            height: 300px;
-            background: radial-gradient(circle, rgba(0, 212, 255, 0.3) 0%, transparent 70%);
-            top: 20%;
-            left: -10%;
-            animation-delay: 0s;
-        }
+    @keyframes float {
+        0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.6; }
+        50% { transform: translateY(-20px) rotate(180deg); opacity: 1; }
+    }
 
-        .orb-2 {
-            width: 200px;
-            height: 200px;
-            background: radial-gradient(circle, rgba(0, 255, 136, 0.25) 0%, transparent 70%);
-            top: 60%;
-            right: -5%;
-            animation-delay: -2s;
-        }
+    /* Glowing orbs */
+    .orb {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(1px);
+        animation: pulse 4s ease-in-out infinite;
+    }
 
-        .orb-3 {
-            width: 150px;
-            height: 150px;
-            background: radial-gradient(circle, rgba(139, 92, 246, 0.2) 0%, transparent 70%);
-            bottom: 20%;
-            left: 30%;
-            animation-delay: -1s;
-        }
+    .orb-1 {
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(circle, rgba(0, 212, 255, 0.3) 0%, transparent 70%);
+        top: 20%;
+        left: -10%;
+        animation-delay: 0s;
+    }
 
-        @keyframes pulse {
-            0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.8; }
-            50% { transform: scale(1.1) rotate(180deg); opacity: 0.4; }
-        }
+    .orb-2 {
+        width: 200px;
+        height: 200px;
+        background: radial-gradient(circle, rgba(0, 255, 136, 0.25) 0%, transparent 70%);
+        top: 60%;
+        right: -5%;
+        animation-delay: -2s;
+    }
 
-        /* Main container */
-        .container {
-            position: relative;
-            z-index: 1;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem;
-        }
+    .orb-3 {
+        width: 150px;
+        height: 150px;
+        background: radial-gradient(circle, rgba(139, 92, 246, 0.2) 0%, transparent 70%);
+        bottom: 20%;
+        left: 30%;
+        animation-delay: -1s;
+    }
 
-        /* Hero section */
-        .hero {
-            max-width: 900px;
-            text-align: center;
-            position: relative;
-        }
+    @keyframes pulse {
+        0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.8; }
+        50% { transform: scale(1.1) rotate(180deg); opacity: 0.4; }
+    }
 
-        .hero-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            padding: 0.5rem 1rem;
-            border-radius: 50px;
-            font-size: 0.875rem;
-            font-weight: 500;
-            margin-bottom: 2rem;
-            animation: slideInDown 1s ease-out;
-        }
+    /* Main container */
+    .container {
+        position: relative;
+        z-index: 1;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+    }
 
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            background: var(--accent-green);
-            border-radius: 50%;
-            animation: blink 2s infinite;
-        }
+    /* Hero section */
+    .hero {
+        max-width: 900px;
+        text-align: center;
+        position: relative;
+    }
 
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
-        }
+    .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        margin-bottom: 2rem;
+        animation: slideInDown 1s ease-out;
+    }
 
-        .hero h1 {
-            font-size: clamp(3rem, 8vw, 6rem);
-            font-weight: 900;
-            line-height: 1.1;
-            margin-bottom: 1.5rem;
-            background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-blue) 50%, var(--accent-green) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: slideInUp 1s ease-out 0.2s both;
-        }
+    .status-dot {
+        width: 8px;
+        height: 8px;
+        background: var(--accent-green);
+        border-radius: 50%;
+        animation: blink 2s infinite;
+    }
 
-        .hero p {
-            font-size: clamp(1.1rem, 2.5vw, 1.5rem);
-            line-height: 1.6;
-            color: var(--text-secondary);
-            margin-bottom: 3rem;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-            animation: slideInUp 1s ease-out 0.4s both;
-        }
+    @keyframes blink {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.3; }
+    }
 
-        /* Enhanced button with hover effects */
-        .cta-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 1.5rem;
-            animation: slideInUp 1s ease-out 0.6s both;
-        }
+    .hero h1 {
+        font-size: clamp(3rem, 8vw, 6rem);
+        font-weight: 900;
+        line-height: 1.1;
+        margin-bottom: 1.5rem;
+        background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-blue) 50%, var(--accent-green) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: slideInUp 1s ease-out 0.2s both;
+    }
 
-        .btn-primary {
-            position: relative;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.75rem;
-            background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-purple) 100%);
-            color: var(--text-primary);
-            text-decoration: none;
-            padding: 1.25rem 3rem;
-            border-radius: 50px;
-            font-weight: 600;
-            font-size: 1.1rem;
-            box-shadow: 0 20px 40px rgba(0, 212, 255, 0.3);
-            transition: all 0.3s ease;
-            overflow: hidden;
-        }
+    .hero p {
+        font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+        line-height: 1.6;
+        color: var(--text-secondary);
+        margin-bottom: 3rem;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+        animation: slideInUp 1s ease-out 0.4s both;
+    }
 
-        .btn-primary::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s;
-        }
+    /* Enhanced button with hover effects */
+    .cta-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1.5rem;
+        animation: slideInUp 1s ease-out 0.6s both;
+    }
 
-        .btn-primary:hover::before {
-            left: 100%;
-        }
+    .btn-primary {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+        background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-purple) 100%);
+        color: var(--text-primary);
+        text-decoration: none;
+        padding: 1.25rem 3rem;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        box-shadow: 0 20px 40px rgba(0, 212, 255, 0.3);
+        transition: all 0.3s ease;
+        overflow: hidden;
+    }
 
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 25px 50px rgba(0, 212, 255, 0.4);
-        }
+    .btn-primary::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.5s;
+    }
 
-        .btn-arrow {
-            transition: transform 0.3s ease;
-        }
+    .btn-primary:hover::before {
+        left: 100%;
+    }
 
-        .btn-primary:hover .btn-arrow {
-            transform: translateX(5px);
-        }
+    .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 25px 50px rgba(0, 212, 255, 0.4);
+    }
 
-        /* Feature cards */
-        .features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-top: 4rem;
-            animation: slideInUp 1s ease-out 0.8s both;
-        }
+    .btn-arrow {
+        transition: transform 0.3s ease;
+    }
 
-        .feature-card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            padding: 2rem;
-            text-align: center;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
+    .btn-primary:hover .btn-arrow {
+        transform: translateX(5px);
+    }
 
-        .feature-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, var(--accent-blue), transparent);
+    /* Feature cards */
+    .features {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-top: 4rem;
+        animation: slideInUp 1s ease-out 0.8s both;
+    }
+
+    .feature-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 2rem;
+        text-align: center;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .feature-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, var(--accent-blue), transparent);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-10px);
+        border-color: var(--accent-blue);
+        box-shadow: 0 20px 40px rgba(0, 212, 255, 0.2);
+    }
+
+    .feature-card:hover::before {
+        opacity: 1;
+    }
+
+    .feature-icon {
+        width: 60px;
+        height: 60px;
+        margin: 0 auto 1rem;
+        background: linear-gradient(135deg, var(--accent-blue), var(--accent-green));
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+
+    .feature-card h3 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .feature-card p {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        line-height: 1.5;
+    }
+
+    /* Animations */
+    @keyframes slideInDown {
+        from {
+            transform: translateY(-100px);
             opacity: 0;
-            transition: opacity 0.3s ease;
         }
-
-        .feature-card:hover {
-            transform: translateY(-10px);
-            border-color: var(--accent-blue);
-            box-shadow: 0 20px 40px rgba(0, 212, 255, 0.2);
-        }
-
-        .feature-card:hover::before {
+        to {
+            transform: translateY(0);
             opacity: 1;
         }
+    }
 
-        .feature-icon {
-            width: 60px;
-            height: 60px;
-            margin: 0 auto 1rem;
-            background: linear-gradient(135deg, var(--accent-blue), var(--accent-green));
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
+    @keyframes slideInUp {
+        from {
+            transform: translateY(100px);
+            opacity: 0;
         }
-
-        .feature-card h3 {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
+        to {
+            transform: translateY(0);
+            opacity: 1;
         }
+    }
 
-        .feature-card p {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            line-height: 1.5;
+    /* Responsive design */
+    @media (max-width: 768px) {
+        .container {
+            padding: 1rem;
         }
-
-        /* Animations */
-        @keyframes slideInDown {
-            from {
-                transform: translateY(-100px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
+        
+        .features {
+            grid-template-columns: 1fr;
+            gap: 1rem;
         }
-
-        @keyframes slideInUp {
-            from {
-                transform: translateY(100px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
+        
+        .feature-card {
+            padding: 1.5rem;
         }
+    }
 
-        /* Responsive design */
-        @media (max-width: 768px) {
-            .container {
-                padding: 1rem;
-            }
+    /* Scroll hint */
+    .scroll-hint {
+        position: absolute;
+        bottom: 2rem;
+        left: 50%;
+        transform: translateX(-50%);
+        animation: bounce 2s infinite;
+        opacity: 0.7;
+    }
+
+    @keyframes bounce {
+        0%, 20%, 50%, 80%, 100% {
+            transform: translateX(-50%) translateY(0);
+        }
+        40% {
+            transform: translateX(-50%) translateY(-10px);
+        }
+        60% {
+            transform: translateX(-50%) translateY(-5px);
+        }
+    }
+</style>
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="bg-animation">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+</div>
+
+<div class="container">
+    <div class="hero">
+        <div class="hero-badge">
+            <div class="status-dot"></div>
+            AI Models Active • Real-time Monitoring
+        </div>
+        
+        <h1>AI-Powered Environmental Insights</h1>
+        
+        <p>Harness cutting-edge machine learning to predict and analyze air and water quality with unprecedented accuracy. Get real-time insights that matter.</p>
+        
+        <div class="cta-container">
+            <a href="/dashboard" class="btn-primary">
+                Launch Dashboard
+                <span class="btn-arrow">→</span>
+            </a>
             
-            .features {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-            }
-            
-            .feature-card {
-                padding: 1.5rem;
-            }
-        }
-
-        /* Scroll hint */
-        .scroll-hint {
-            position: absolute;
-            bottom: 2rem;
-            left: 50%;
-            transform: translateX(-50%);
-            animation: bounce 2s infinite;
-            opacity: 0.7;
-        }
-
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% {
-                transform: translateX(-50%) translateY(0);
-            }
-            40% {
-                transform: translateX(-50%) translateY(-10px);
-            }
-            60% {
-                transform: translateX(-50%) translateY(-5px);
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="bg-animation">
-        <div class="orb orb-1"></div>
-        <div class="orb orb-2"></div>
-        <div class="orb orb-3"></div>
-    </div>
-
-    <div class="container">
-        <div class="hero">
-            <div class="hero-badge">
-                <div class="status-dot"></div>
-                AI Models Active • Real-time Monitoring
-            </div>
-            
-            <h1>AI-Powered Environmental Insights</h1>
-            
-            <p>Harness cutting-edge machine learning to predict and analyze air and water quality with unprecedented accuracy. Get real-time insights that matter.</p>
-            
-            <div class="cta-container">
-                <a href="/dashboard" class="btn-primary">
-                    Launch Dashboard
-                    <span class="btn-arrow">→</span>
-                </a>
+            <div class="features">
+                <div class="feature-card">
+                    <div class="feature-icon">🌊</div>
+                    <h3>Water Quality AI</h3>
+                    <p>ML models analyze contamination patterns and predict water safety levels in real-time</p>
+                </div>
                 
-                <div class="features">
-                    <div class="feature-card">
-                        <div class="feature-icon">🌊</div>
-                        <h3>Water Quality AI</h3>
-                        <p>ML models analyze contamination patterns and predict water safety levels in real-time</p>
-                    </div>
-                    
-                    <div class="feature-card">
-                        <div class="feature-icon">💨</div>
-                        <h3>Air Quality ML</h3>
-                        <p>Advanced Random Forest and LightGBM algorithms process atmospheric data to forecast air pollution and health advisories</p>
-                    </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💨</div>
+                    <h3>Air Quality ML</h3>
+                    <p>Advanced Random Forest and LightGBM algorithms process atmospheric data to forecast air pollution and health advisories</p>
                 </div>
             </div>
         </div>
-        
-        <div class="scroll-hint">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M12 5v14M19 12l-7 7-7-7"/>
-            </svg>
-        </div>
     </div>
-
-    <script>
-        // Create animated particles
-        function createParticles() {
-            const bgAnimation = document.querySelector('.bg-animation');
-            const particleCount = 50;
-            
-            for (let i = 0; i < particleCount; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.top = Math.random() * 100 + '%';
-                particle.style.animationDelay = Math.random() * 6 + 's';
-                particle.style.animationDuration = (Math.random() * 4 + 6) + 's';
-                bgAnimation.appendChild(particle);
-            }
+    
+    <div class="scroll-hint">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 5v14M19 12l-7 7-7-7"/>
+        </svg>
+    </div>
+</div>
+    
+<script>
+    // Create animated particles
+    function createParticles() {
+        const bgAnimation = document.querySelector('.bg-animation');
+        const particleCount = 50;
+        
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.top = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 6 + 's';
+            particle.style.animationDuration = (Math.random() * 4 + 6) + 's';
+            bgAnimation.appendChild(particle);
         }
+    }
 
-        // Mouse tracking effect for orbs
-        document.addEventListener('mousemove', (e) => {
-            const orbs = document.querySelectorAll('.orb');
-            const mouseX = e.clientX / window.innerWidth;
-            const mouseY = e.clientY / window.innerHeight;
-            
-            orbs.forEach((orb, index) => {
-                const speed = (index + 1) * 0.5;
-                const x = (mouseX - 0.5) * speed;
-                const y = (mouseY - 0.5) * speed;
-                orb.style.transform = `translate(${x * 20}px, ${y * 20}px)`;
-            });
+    // Mouse tracking effect for orbs
+    document.addEventListener('mousemove', (e) => {
+        const orbs = document.querySelectorAll('.orb');
+        const mouseX = e.clientX / window.innerWidth;
+        const mouseY = e.clientY / window.innerHeight;
+        
+        orbs.forEach((orb, index) => {
+            const speed = (index + 1) * 0.5;
+            const x = (mouseX - 0.5) * speed;
+            const y = (mouseY - 0.5) * speed;
+            orb.style.transform = `translate(${x * 20}px, ${y * 20}px)`;
         });
+    });
 
-        // Feature card hover effects with sound-like ripple
-        document.querySelectorAll('.feature-card').forEach(card => {
-            card.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-10px) scale(1.02)';
-            });
-            
-            card.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateY(0) scale(1)';
-            });
+    // Feature card hover effects with sound-like ripple
+    document.querySelectorAll('.feature-card').forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-10px) scale(1.02)';
         });
-
-        // Initialize particles when page loads
-        document.addEventListener('DOMContentLoaded', createParticles);
-
-        // Smooth scroll for scroll hint
-        document.querySelector('.scroll-hint').addEventListener('click', () => {
-            window.scrollBy({
-                top: window.innerHeight,
-                behavior: 'smooth'
-            });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0) scale(1)';
         });
-    </script>
+    });
+
+    // Initialize particles when page loads
+    document.addEventListener('DOMContentLoaded', createParticles);
+
+    // Smooth scroll for scroll hint
+    document.querySelector('.scroll-hint').addEventListener('click', () => {
+        window.scrollBy({
+            top: window.innerHeight,
+            behavior: 'smooth'
+        });
+    });
+</script>
+{% endblock %}
+
 </body>
 </html>
