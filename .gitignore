@@ -1,6 +1,11 @@
 *.pkl
-*.csv
+major project data air.csv
+LocationsRaw.csv
 *.ipynb_checkpoints/
 __pycache__/
 lime_explanation (1).html
 shap_single_prediction (1).html
+ner_model_final_final8
+ner_model_final_final7
+textcat_model_final_final8
+textcat_model_final_final7

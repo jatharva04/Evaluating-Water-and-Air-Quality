@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AI Air & Water Monitoring{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    {% block page_specific_css %}{% endblock %}
+
+    <style>
+        :root {
+        --primary-bg: #0a0a0f;
+        --secondary-bg: #1a1a2e;
+        --accent-blue: #00d4ff;
+        --accent-green: #00ff88;
+        --accent-purple: #8b5cf6;
+        --text-primary: #ffffff;
+        --text-secondary: #a8b2d1;
+        --glass-bg: rgba(255, 255, 255, 0.05);
+        --glass-border: rgba(255, 255, 255, 0.1);
+    }
+        /* Chat Widget CSS */
+
+        /* Chat Bubble (the floating button) */
+        .chat-bubble {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-purple) 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 28px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            z-index: 999;
+            /* transition: transform 0.2s; */
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .chat-bubble:hover { transform: scale(1.1); box-shadow: 0 8px 20px rgba(0,0,0,0.4);}
+
+        /* Chat Window */
+        .chat-window {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            width: 540px;
+            height: 660px;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 18px;
+            box-shadow: 0 10px 30px rgba(0,0,0,.15);
+            display: flex;
+            flex-direction: column;
+            z-index: 1000;
+            transform: scale(0);
+            transform-origin: bottom right;
+            transition: transform 0.3s ease-in-out;
+            overflow: hidden;
+        }
+        .chat-window.open {
+            transform: scale(1);
+        }
+
+        /* Chat Header */
+        .chat-header { padding:0.8rem 1rem; background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple)); color:white; border-bottom: none; display: flex; justify-content: space-between; align-items: center; font-weight: 600; box-shadow: 0 2px 5px rgba(0,0,0,0.1);}
+        .chat-header span { font-size: 1.1em; }
+        /* Chat Close Button */
+        .chat-close-btn { background: none; border: none; color: white; font-size: 28px; cursor: pointer; padding: 0 5px; transition: transform 0.2s ease;}
+
+        /* Chat Body (Message Container) */
+        .chat-body { flex-grow: 1; padding: 1rem; overflow-y: auto; display: flex; flex-direction: column; gap: 0.75rem; background-color: #f8f9fa; scrollbar-width: thin; scrollbar-color: var(--accent-purple) #f0f0f0;}
+
+        /* Chat Footer (Input Area) */
+        .chat-footer { padding: 0; border-top: 1px solid #e0e0e0; background-color: #ffffff;}
+        #chat-form { display: flex;  gap: 0.5rem; align-items: center; padding: 0.5rem 0.75rem; border: 1px solid #dcdcdc; background-color: #f0f2f5; transition: border-color 0.2s ease, box-shadow 0.2s ease;}
+
+        /* ADD THIS NEW RULE for the focused state */
+        #chat-form.form-focused {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.2);
+        }
+
+        #chat-input { flex-grow: 1; background: transparent; border: none; color: #333; padding: 0.2rem; font-size: 1rem; outline: none; transition: border-color 0.2s ease, box-shadow 0.2s ease;}
+        
+        /* Send Button/Icon */
+        #chat-form button { border: none; background: var(--accent-purple); color: white; width: 40px; height: 40px; padding: 0.5rem 1rem; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; transition: background-color 0.2s ease, transform 0.1s ease;font-weight: 600; cursor: pointer;  flex-shrink: 0;}
+        #chat-form button:hover:not(:disabled) {
+            background: var(--accent-blue); /* Blue on hover when enabled */
+            transform: scale(1.05);
+        }
+        #chat-form button:disabled {
+            background-color: #cccccc; /* Gray when disabled */
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        /* Message Bubbles */
+        .message { max-width: 80%; padding: 0.8rem 1rem; border-radius: 12px; line-height: 1.4; font-size: 1.1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.08); line-height: 1.5;}
+        .user-message { background-color: #e0e0e0; color: #333; align-self: flex-end; border-bottom-right-radius: 6px;}
+        .bot-message { background-color: #ffffff; color: black; align-self: flex-start; border: 1px solid #f0f0f0; border-bottom-left-radius: 6px;}
+    </style>
+</head>
+<body>
+    {% block content %}{% endblock %}
+
+    <div class="chat-bubble" id="chat-bubble">🤖</div>
+    <div class="chat-window" id="chat-window">
+        <div class="chat-header">
+            <span>AI Assistant</span>
+            <button class="chat-close-btn" id="chat-close-btn">&minus;</button>
+        </div>
+        <div class="chat-body" id="chat-body">
+            <div class="message bot-message">Hi! How can I help you with air and water quality today?</div>
+        </div>
+        <div class="chat-footer">
+            <form id="chat-form">
+                <input type="text" id="chat-input" placeholder="Ask a question..." autocomplete="off">
+                <button type="submit" id="chat-send-btn" disabled><i class="fas fa-paper-plane"></i></button> </form>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    <script>
+        // CHATBOT
+        const chatBubble = document.getElementById('chat-bubble');
+        const chatWindow = document.getElementById('chat-window');
+        const closeBtn = document.getElementById('chat-close-btn');
+        const chatForm = document.getElementById('chat-form');
+        const chatInput = document.getElementById('chat-input');
+        const chatSendBtn = document.getElementById('chat-send-btn');
+        const chatBody = document.getElementById('chat-body');
+
+        let sessionData = {};
+
+        // Toggle chat window visibility
+        chatBubble.addEventListener('click', () => chatWindow.classList.toggle('open'));
+        closeBtn.addEventListener('click', () => chatWindow.classList.remove('open'));
+
+        // --- New: Input validation for send button ---
+        chatInput.addEventListener('input', () => {
+            chatSendBtn.disabled = chatInput.value.trim() === '';
+        });
+        // Set initial state
+        chatSendBtn.disabled = true; 
+
+        // Add the 'form-focused' class when the user clicks in the input
+        chatInput.addEventListener('focus', () => {
+            chatForm.classList.add('form-focused');
+        });
+        // Remove the class when the user clicks away
+        chatInput.addEventListener('blur', () => {
+            chatForm.classList.remove('form-focused');
+        });
+
+        // The chat history is simply the HTML elements in the chat body
+        chatForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const userInput = chatInput.value.trim();
+            if (!userInput) return;
+
+            // Add user message to UI
+            addMessageToUI('user', userInput);
+            chatInput.value = '';
+            chatSendBtn.disabled = true;
+
+            // Add a temporary "typing" message for the bot
+            const typingIndicator = addMessageToUI('bot', '<i class="fas fa-spinner fa-spin"></i> Just a second...');
+
+            // Send message to Flask backend
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: userInput, session_data: sessionData })
+                });
+                const data = await response.json();
+
+                // Replace the "typing" message with the actual response
+                typingIndicator.innerHTML = data.response;
+                sessionData = data.session_data;
+
+            } catch (error) {
+                console.error('Error:', error);
+                typingIndicator.textContent = 'Sorry, something went wrong.';
+                sessionData = {}; // Reset session data on error
+            }
+        });
+
+        function addMessageToUI(sender, text) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message', sender === 'user' ? 'user-message' : 'bot-message');
+            messageDiv.innerHTML = text;
+            chatBody.appendChild(messageDiv);
+            chatBody.scrollTop = chatBody.scrollHeight; // Auto-scroll to bottom
+            return messageDiv; // Return the element to allow modification (for the typing indicator)
+        }
+
+    </script>
+    {% block page_specific_js %}{% endblock %}
+</body>
+</html>

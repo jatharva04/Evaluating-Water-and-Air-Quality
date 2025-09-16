@@ -1,0 +1,93 @@
+{
+    "WQI": "Water Quality Index (WQI) shows the overall quality of water, based on different parameters like pH, dissolved oxygen, BOD, hardness, nitrates, etc. ",
+
+    "sources_water": "Sources of water pollution include: Industries releasing chemicals and toxic waste; Agriculture using fertilizers, pesticides, and animal waste; Households discharging sewage, detergents, and plastics; Oil spills and marine dumping; Mining activities releasing heavy metals; Urban runoff carrying oil, grease, and litter. In short, most water pollution comes from human activities like industry, farming, sewage, and waste disposal.",
+
+    "how_wqi_calculated": "The WQI is calculated using parameters like pH, Dissolved Oxygen, BOD, COD, nitrates, and Fecal Coliform. These values are compared to standards and combined into a single score representing overall water quality.",
+
+    "water_safe": "A WQI from 63-100 indicates 'Good to Excellent' water quality. The water is clean, safe for drinking and daily use, and poses no significant health risks.",
+    "water_moderate": "A WQI from 50-63 indicates 'Medium to Good' quality. The water is generally safe, though minor treatment or filtration may be recommended for sensitive users.",
+    "water_bad": "A WQI from 38-50 is classified as 'Bad'. The water is polluted and not safe for direct drinking. It may require significant treatment before use.",
+    "water_very bad": "A WQI of 38 or below indicates 'Bad to Very Bad' quality. The water is heavily polluted, unsafe for human consumption, and should be avoided unless thoroughly treated.",
+
+  "ph": {
+    "info": "pH measures how acidic or alkaline the water is on a scale of 0 to 14. A pH of 7 is neutral, less than 7 is acidic, and greater than 7 is alkaline. The ideal pH for drinking water is between 6.5 and 8.5.",
+    "effects": "Water with a very low or high pH can be a sign of chemical pollution. It can cause a bitter or metallic taste, corrode plumbing fixtures, and may lead to skin irritation."
+  },
+
+  "dissolved oxygen": {
+    "info": "Dissolved Oxygen (DO) is the amount of oxygen present in the water. It's a crucial indicator of a water body's health, as aquatic life like fish need it to breathe.",
+    "effects": "Low levels of Dissolved Oxygen are often a sign of pollution from organic waste (like sewage). This can lead to fish kills and indicates an unhealthy ecosystem that cannot support aquatic life."
+  },
+
+  "bod": {
+    "info": "Biochemical Oxygen Demand (BOD) measures the amount of oxygen required by bacteria to decompose organic waste in water. It is a key indicator of pollution from sources like sewage and agricultural runoff.",
+    "effects": "A high BOD level means there is a lot of organic pollution. This process consumes dissolved oxygen, which can harm or kill fish and other aquatic organisms, leading to an unhealthy water body."
+  },
+
+  "cod": {
+    "info": "Chemical Oxygen Demand (COD) is similar to BOD, but it measures the total amount of oxygen required to break down all organic and inorganic pollutants chemically. The COD value is always higher than the BOD value.",
+    "effects": "A high COD level indicates significant pollution from chemicals and organic matter, often from industrial wastewater. This pollution can be toxic to aquatic life and indicates a severely degraded water source."
+  },
+
+  "nitrates": {
+    "info": "Nitrates are a form of nitrogen that can enter water supplies, commonly from fertilizer runoff, septic systems, and animal waste. They are a common indicator of nutrient pollution.",
+    "effects": "High nitrate levels in drinking water are particularly dangerous for infants, as they can lead to a serious condition called 'blue baby syndrome' (methemoglobinemia), which reduces the blood's ability to carry oxygen. It also contributes to algae blooms in water bodies."
+  },
+
+  "fecal coliform": {
+    "info": "Fecal Coliform is a group of bacteria found in the intestines of warm-blooded animals, including humans. Its presence in water is a direct indicator of contamination from sewage or animal waste.",
+    "effects": "While the bacteria themselves are not always directly harmful, their presence signals that other disease-causing pathogens may be in the water. Consuming water contaminated with fecal matter can cause gastrointestinal illnesses like diarrhea, dysentery, and other serious infections."
+  },
+  
+  "tds": {
+    "info": "Total Dissolved Solids (TDS) represents the total concentration of all dissolved substances in water, including minerals, salts, and organic matter. It is often measured in parts per million (ppm). The safe limit for nitrates in drinking water is 50 mg/L",
+    "effects": "While some minerals are beneficial, very high TDS levels (above 500 ppm) can give water a salty, bitter, or metallic taste. Extremely high levels may indicate the presence of toxic minerals and can cause scaling in pipes and appliances."
+  },
+
+    "potable": "Water that is safe to drink. It is free from harmful microbes, chemicals, and pollutants, and meets quality standards.",
+    "non-potable": "Water that is not safe for drinking. It may contain contaminants, pathogens, or pollutants and should only be used for purposes like cleaning, irrigation, or industrial use.",
+    "turbidity": "Turbidity is the measure of cloudiness or haziness in a fluid, primarily water. It's caused by suspended particles like silt, clay, algae, and organic matter that are invisible to the naked eye. The most common and accurate method for measuring turbidity is by using a nephelometer, also known as a turbidimeter. This instrument works by shining a beam of light through a water sample and measuring the amount of light that is scattered at a 90-degree angle by the suspended particles.",
+    "cities_water": "Water quality is often poorer in cities due to industrial discharge, inadequate sewage treatment, and runoff from roads.",
+    "bottled_water": "While bottled water is generally safe, tap water in most municipal areas is also treated to meet safety standards. The choice often comes down to taste and the environmental impact of plastic",
+    "safe_drinking_level": "For drinking, the WQI should ideally be 'Good'. Water in the 'Satisfactory' category is often acceptable, but anything 'Moderate' or worse should be treated before consumption.",
+    "improve_at_home": "You can improve water quality at home by boiling, using activated carbon filters (like in a pitcher), or installing a system like a UV purifier or Reverse Osmosis (RO).",
+  "contaminants": "A contaminant is any unwanted substance, whether chemical, biological, or physical, that is present where it doesn't belong, rendering a material like air, water, or food impure and potentially harmful. It essentially pollutes a substance, making it unsafe or unsuitable for its intended use.",
+  "waterborne": "Waterborne diseases are illnesses caused by pathogenic microorganisms, such as bacteria, viruses, and protozoa, which are transmitted by consuming or coming into contact with contaminated water. These diseases often spread through the fecal-oral route due to inadequate sanitation and hygiene.",
+
+  "purify": "The most common methods are boiling, using activated carbon filters (like in a pitcher), or installing an RO or UV purifier.",
+
+  "low_ph": "Water with a low pH is acidic. It can have a sour or metallic taste and may leach metals from plumbing pipes. It's best to use a neutralizer or a filter that corrects the pH balance.",
+
+  "good": {
+    "definition": "A Water Quality Index (WQI) score of 80-100 is considered 'Good'.",
+    "recommendation": "The water quality is excellent and is considered safe for all uses, including drinking."
+  },
+  "satisfactory": {
+    "definition": "A WQI score of 60-79 is considered 'Satisfactory'.",
+    "recommendation": "The water is generally safe for consumption, but sensitive individuals might consider using a basic filter for taste."
+  },
+  "moderate": {
+    "definition": "A WQI score of 40-59 is 'Moderate', indicating some level of pollution.",
+    "recommendation": "This water is not recommended for drinking without proper treatment. Boiling or using a multi-stage water purifier is advised."
+  },
+  "poor": {
+    "definition": "A WQI score of 20-39 is 'Poor', indicating significant contamination.",
+    "recommendation": "This water is not safe for drinking. Use a reliable purifier like an RO system and avoid direct consumption."
+  },
+  "very_poor": {
+    "definition": "A WQI score below 20 is 'Very Poor' and is considered heavily polluted.",
+    "recommendation": "Do not use this water for drinking, cooking, or even bathing. Contact your local water authority."
+  },
+  "fecal_coliform": {
+    "info": "Fecal Coliform is a group of bacteria indicating contamination from sewage or animal waste.",
+    "recommendation": "WARNING: The presence of Fecal Coliform is a serious health risk. The water is unsafe and must be disinfected by boiling for at least one minute or by using a UV purifier before any use."
+  },
+  "child": {
+    "recommendation": "For infants, young children, and people with compromised immunity, it is always safest to use water that has been boiled and cooled, or water from a trusted RO purifier."
+  },
+  "boiling": {
+    "info": "Boiling water is an excellent method for killing harmful microorganisms like bacteria and viruses. However, it does not remove dissolved solids (TDS) or chemical contaminants."
+  },
+  "default_recommendation": "If you are ever unsure about your water's quality, the safest option is to boil it for at least one minute before drinking. This will kill most harmful bacteria and viruses."
+}
