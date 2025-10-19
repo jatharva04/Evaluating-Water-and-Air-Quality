@@ -202,11 +202,11 @@
             </p>
             <div class="form-grid" title="These are representative values. You can change them and predict.">
                 <div class="form-group"><label>pH</label><input type="number" step="any" id="ph" required></div>
-                <div class="form-group"><label>Dissolved O₂</label><input type="number" step="any" id="dissolvedoxygen" required></div>
-                <div class="form-group"><label>BOD</label><input type="number" step="any" id="bod" required></div>
-                <div class="form-group"><label>COD</label><input type="number" step="any" id="cod" required></div>
-                <div class="form-group"><label>Nitrate</label><input type="number" step="any" id="nitrate" required></div>
-                <div class="form-group"><label>Fecal Coliform</label><input type="number" step="1" id="fecalcoliform" required></div>
+                <div class="form-group"><label>Dissolved O₂ (mg/L)</label><input type="number" step="any" id="dissolvedoxygen" required></div>
+                <div class="form-group"><label>BOD (mg/L)</label><input type="number" step="any" id="bod" required></div>
+                <div class="form-group"><label>COD (mg/L)</label><input type="number" step="any" id="cod" required></div>
+                <div class="form-group"><label>Nitrate (mg/L)</label><input type="number" step="any" id="nitrate" required></div>
+                <div class="form-group"><label>Fecal Coliform (MPN/100 ml)</label><input type="number" step="1" id="fecalcoliform" required></div>
             </div>
             <button type="submit" class="button-link" style="margin-top: 1.5rem;">Predict WQI for these values</button>
         </form>
@@ -245,8 +245,8 @@
 
     function aqiColor(aqiClass) {
         const colors = {
-            1: "#2ecc71", 2: "#f1c40f", 3: "#e67e22",
-            4: "#e74c3c", 5: "#8e44ad"
+            1: "#00B050", 2: "#92D050", 3: "#FFFF00",
+            4: "#FF9900", 5: "#FF0000"
         };
         return colors[aqiClass] || "#7f8c8d";
     }
@@ -399,12 +399,12 @@
         const pollutants = data.pollutants;
 
         pollutantsEl.innerHTML = `
-            <div class="summary-block"><div class="label">PM2.5</div><div class="value">${pollutants?.pm2_5?.toFixed(2) ?? 'N/A'}</div></div>
-            <div class="summary-block"><div class="label">PM10</div><div class="value">${pollutants?.pm10?.toFixed(2) ?? 'N/A'}</div></div>
-            <div class="summary-block"><div class="label">O₃ (Ozone)</div><div class="value">${pollutants?.o3?.toFixed(2) ?? 'N/A'}</div></div>
-            <div class="summary-block"><div class="label">NO₂</div><div class="value">${pollutants?.no2?.toFixed(2) ?? 'N/A'}</div></div>
-            <div class="summary-block"><div class="label">SO₂</div><div class="value">${pollutants?.so2?.toFixed(2) ?? 'N/A'}</div></div>
-            <div class="summary-block"><div class="label">CO</div><div class="value">${pollutants?.co?.toFixed(2) ?? 'N/A'}</div></div>
+            <div class="summary-block"><div class="label">PM2.5 (μg/m3)</div><div class="value">${pollutants?.pm2_5?.toFixed(2) ?? 'N/A'}</div></div>
+            <div class="summary-block"><div class="label">PM10 (μg/m3)</div><div class="value">${pollutants?.pm10?.toFixed(2) ?? 'N/A'}</div></div>
+            <div class="summary-block"><div class="label">O₃(Ozone)(μg/m3)</div><div class="value">${pollutants?.o3?.toFixed(2) ?? 'N/A'}</div></div>
+            <div class="summary-block"><div class="label">NO₂ (μg/m3)</div><div class="value">${pollutants?.no2?.toFixed(2) ?? 'N/A'}</div></div>
+            <div class="summary-block"><div class="label">SO₂ (μg/m3)</div><div class="value">${pollutants?.so2?.toFixed(2) ?? 'N/A'}</div></div>
+            <div class="summary-block"><div class="label">CO (μg/m3)</div><div class="value">${pollutants?.co?.toFixed(2) ?? 'N/A'}</div></div>
         `;
         
         if (data.shap_explanation) {
@@ -426,11 +426,11 @@
         const paramsEl = document.getElementById('water-parameters');
         paramsEl.innerHTML = `
             <div class="summary-block"><div class="label">pH</div><div class="value">${params?.pH?.toFixed(2) ?? 'N/A'}</div></div>
-            <div class="summary-block"><div class="label">Dissolved O₂</div><div class="value">${params?.dissolvedoxygen?.toFixed(2) ?? 'N/A'}</div></div>
-            <div class="summary-block"><div class="label">BOD</div><div class="value">${params?.bod?.toFixed(2) ?? 'N/A'}</div></div>
-            <div class="summary-block"><div class="label">COD</div><div class="value">${params?.cod?.toFixed(2) ?? 'N/A'}</div></div>
-            <div class="summary-block"><div class="label">Nitrate</div><div class="value">${params?.nitrate?.toFixed(2) ?? 'N/A'}</div></div>
-            <div class="summary-block"><div class="label">Fecal Coliform</div><div class="value">${params?.FecalColiform?.toFixed(0) ?? 'N/A'}</div></div>
+            <div class="summary-block"><div class="label">Dissolved O₂ (mg/L)</div><div class="value">${params?.dissolvedoxygen?.toFixed(2) ?? 'N/A'}</div></div>
+            <div class="summary-block"><div class="label">BOD (mg/L)</div><div class="value">${params?.bod?.toFixed(2) ?? 'N/A'}</div></div>
+            <div class="summary-block"><div class="label">COD (mg/L)</div><div class="value">${params?.cod?.toFixed(2) ?? 'N/A'}</div></div>
+            <div class="summary-block"><div class="label">Nitrate (mg/L)</div><div class="value">${params?.nitrate?.toFixed(2) ?? 'N/A'}</div></div>
+            <div class="summary-block"><div class="label">Fecal Coliform (MPN/100 ml)</div><div class="value">${params?.FecalColiform?.toFixed(0) ?? 'N/A'}</div></div>
         `;
 
         if (data.shap_explanation) {

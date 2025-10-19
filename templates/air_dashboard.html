@@ -1,313 +1,315 @@
-<!doctype html>
-<html>
-<head>
-    <meta charset="utf-8"/>
-    <title>AQI Dashboard — Now & 72h Forecast</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+{% extends "base.html" %}
+
+{% block title %} AQI Dashboard — Now & 72h Forecast {% endblock %}
+
+{% block page_specific_css %}
+
 <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-        
-        :root {
-            --bg: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            --card: rgba(17, 24, 39, 0.85);
-            --card-border: rgba(55, 65, 81, 0.4);
-            --text: #f8fafc;
-            --text-secondary: #cbd5e1;
-            --muted: #94a3b8;
-            --accent: #38bdf8;
-            --accent-glow: rgba(56, 189, 248, 0.15);
-            --surface: rgba(30, 41, 59, 0.6);
-            --good: #10b981;
-            --moderate: #f59e0b;
-            --usg: #f97316;
-            --unhealthy: #ef4444;
-            --very-unhealthy: #8b5cf6;
-        }
-        
-        * { 
-            box-sizing: border-box; 
-        }
-        
-        body { 
-            margin: 0; 
-            background: var(--bg);
-            background-attachment: fixed;
-            color: var(--text);
-            font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-            line-height: 1.6;
-        }
-        
-        header { 
-            padding: 24px 32px; 
-            border-bottom: 1px solid var(--card-border);
-            backdrop-filter: blur(12px);
-            background: rgba(15, 23, 42, 0.9);
-            display: flex; 
-            align-items: center; 
-            gap: 16px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        
-        header h1 { 
-            margin: 0; 
-            font-size: 28px; 
-            font-weight: 700;
-            letter-spacing: -0.025em;
-            background: linear-gradient(135deg, var(--text) 0%, var(--accent) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        
-        .container { 
-            padding: 32px; 
-            display: grid; 
-            grid-template-columns: 1fr; 
-            gap: 24px; 
-            max-width: 1400px; 
-            margin: 0 auto; 
-        }
-        
-        .card { 
-            background: var(--card);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--card-border);
-            border-radius: 20px; 
-            padding: 24px; 
-            box-shadow: 
-                0 20px 25px -5px rgba(0, 0, 0, 0.1),
-                0 10px 10px -5px rgba(0, 0, 0, 0.04);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, var(--accent), transparent);
-            opacity: 0.6;
-        }
-        
-        .card:hover {
-            transform: translateY(-2px);
-            box-shadow: 
-                0 25px 50px -12px rgba(0, 0, 0, 0.25),
-                0 0 0 1px rgba(56, 189, 248, 0.05);
-        }
-        
-        .section-title { 
-            margin: 0 0 20px 0; 
-            font-size: 18px; 
-            font-weight: 600;
-            color: var(--text-secondary);
-            letter-spacing: -0.025em;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        
-        .section-title::before {
-            content: '';
-            width: 4px;
-            height: 20px;
-            background: linear-gradient(135deg, var(--accent), var(--good));
-            border-radius: 2px;
-        }
-        
-        .map-wrap { 
-            overflow: hidden; 
-            border-radius: 16px;
-            border: 1px solid var(--card-border);
-            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
-        }
-        
-        .controls { 
-            display: flex; 
-            align-items: center; 
-            gap: 16px; 
-            padding: 8px 0 20px; 
-            flex-wrap: wrap; 
-        }
-        
-        select { 
-            background: var(--surface);
-            backdrop-filter: blur(8px);
-            color: var(--text); 
-            border: 1px solid var(--card-border);
-            border-radius: 12px; 
-            padding: 12px 16px; 
-            font-size: 14px; 
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            outline: none;
-            min-width: 200px;
-        }
-        
-        select:hover {
-            border-color: var(--accent);
-            background: rgba(56, 189, 248, 0.05);
-        }
-        
-        select:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px var(--accent-glow);
-        }
-        
-        .legend { 
-            display: inline-grid; 
-            grid-template-columns: repeat(5, auto auto); 
-            gap: 8px 16px; 
-            align-items: center; 
-            margin-left: auto; 
-            color: var(--muted); 
-            font-size: 13px;
-            font-weight: 500;
-            padding: 12px 20px;
-            background: var(--surface);
-            border-radius: 16px;
-            backdrop-filter: blur(8px);
-            border: 1px solid var(--card-border);
-        }
-        
-        .dot { 
-            width: 12px; 
-            height: 12px; 
-            border-radius: 50%; 
-            display: inline-block;
-            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
-        }
-        
-        .chart-container {
-            position: relative;
-            height: 400px;
-            width: 100%;
-            background: var(--surface);
-            border-radius: 16px;
-            padding: 20px;
-            border: 1px solid var(--card-border);
-        }
-        
-        .locations { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
-            gap: 16px; 
-        }
-        
-        .loc { 
-            background: var(--surface);
-            backdrop-filter: blur(8px);
-            border: 1px solid var(--card-border);
-            border-radius: 16px; 
-            padding: 20px; 
-            font-size: 14px;
-            transition: all 0.2s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .loc::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            background: linear-gradient(135deg, var(--accent), var(--good));
-            opacity: 0;
-            transition: opacity 0.2s ease;
-        }
-        
-        .loc:hover {
-            transform: translateY(-2px);
-            border-color: var(--accent);
-            box-shadow: 0 8px 25px -8px var(--accent-glow);
-        }
-        
-        .loc > div:first-child {
-            font-weight: 600;
-            font-size: 16px;
-            color: var(--text);
-            margin-bottom: 8px;
-        }
-        
-        .loc strong {
-            color: var(--accent);
-            font-weight: 600;
-        }
-        
-        .muted { 
-            color: var(--muted);
-            font-size: 13px;
-            margin: 4px 0;
-        }
-        
-        /* Loading state */
-        .loading {
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .loading::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.1), transparent);
-            animation: shimmer 1.5s infinite;
-        }
-        
-        @keyframes shimmer {
-            0% { left: -100%; }
-            100% { left: 100%; }
-        }
-        
-        /* Smooth transitions for all interactive elements */
-        * {
-            transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
-        }
-        /* NEW STYLES for recommendations and LIME */
-        .details-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 24px;
-        }
-        .recommendations ul, .lime-explanation ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        .recommendations li {
-            background: var(--surface);
-            padding: 12px 16px;
-            border-radius: 12px;
-            border: 1px solid var(--card-border);
-            font-size: 15px;
-        }
-        .lime-explanation li {
-            font-family: 'Courier New', Courier, monospace;
-            background: var(--surface);
-            padding: 10px;
-            border-radius: 8px;
-            font-size: 14px;
-            color: var(--text-secondary);
-        }
-    </style>
-    <script src="https://cdn.jsdelivr.net/npm/luxon@3.4.4/build/global/luxon.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1.3.1/dist/chartjs-adapter-luxon.umd.min.js"></script>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    
+    :root {
+        --bg: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        --card: rgba(17, 24, 39, 0.85);
+        --card-border: rgba(55, 65, 81, 0.4);
+        --text: #f8fafc;
+        --text-secondary: #cbd5e1;
+        --muted: #94a3b8;
+        --accent: #38bdf8;
+        --accent-glow: rgba(56, 189, 248, 0.15);
+        --surface: rgba(30, 41, 59, 0.6);
+        --good: #00B050;
+        --moderate: #92D050;
+        --usg: #FFFF00;
+        --unhealthy: #FF9900;
+        --very-unhealthy: #FF0000;
+    }
+    
+    * { 
+        box-sizing: border-box; 
+    }
+    
+    body { 
+        margin: 0; 
+        background: var(--bg);
+        background-attachment: fixed;
+        color: var(--text);
+        font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+        line-height: 1.6;
+    }
+    
+    header { 
+        padding: 24px 32px; 
+        border-bottom: 1px solid var(--card-border);
+        backdrop-filter: blur(12px);
+        background: rgba(15, 23, 42, 0.9);
+        display: flex; 
+        align-items: center; 
+        gap: 16px;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+    
+    header h1 { 
+        margin: 0; 
+        font-size: 28px; 
+        font-weight: 700;
+        letter-spacing: -0.025em;
+        background: linear-gradient(135deg, var(--text) 0%, var(--accent) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .container { 
+        padding: 32px; 
+        display: grid; 
+        grid-template-columns: 1fr; 
+        gap: 24px; 
+        max-width: 1400px; 
+        margin: 0 auto; 
+    }
+    
+    .card { 
+        background: var(--card);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--card-border);
+        border-radius: 20px; 
+        padding: 24px; 
+        box-shadow: 
+            0 20px 25px -5px rgba(0, 0, 0, 0.1),
+            0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, var(--accent), transparent);
+        opacity: 0.6;
+    }
+    
+    .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 
+            0 25px 50px -12px rgba(0, 0, 0, 0.25),
+            0 0 0 1px rgba(56, 189, 248, 0.05);
+    }
+    
+    .section-title { 
+        margin: 0 0 20px 0; 
+        font-size: 18px; 
+        font-weight: 600;
+        color: var(--text-secondary);
+        letter-spacing: -0.025em;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    
+    .section-title::before {
+        content: '';
+        width: 4px;
+        height: 20px;
+        background: linear-gradient(135deg, var(--accent), var(--good));
+        border-radius: 2px;
+    }
+    
+    .map-wrap { 
+        overflow: hidden; 
+        border-radius: 16px;
+        border: 1px solid var(--card-border);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    }
+    
+    .controls { 
+        display: flex; 
+        align-items: center; 
+        gap: 16px; 
+        padding: 8px 0 20px; 
+        flex-wrap: wrap; 
+    }
+    
+    select { 
+        background: var(--surface);
+        backdrop-filter: blur(8px);
+        color: var(--text); 
+        border: 1px solid var(--card-border);
+        border-radius: 12px; 
+        padding: 12px 16px; 
+        font-size: 14px; 
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        outline: none;
+        min-width: 200px;
+    }
+    
+    select:hover {
+        border-color: var(--accent);
+        background: rgba(56, 189, 248, 0.05);
+    }
+    
+    select:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+    
+    .legend { 
+        display: inline-grid; 
+        grid-template-columns: repeat(5, auto auto); 
+        gap: 8px 16px; 
+        align-items: center; 
+        margin-left: auto; 
+        color: var(--muted); 
+        font-size: 13px;
+        font-weight: 500;
+        padding: 12px 20px;
+        background: var(--surface);
+        border-radius: 16px;
+        backdrop-filter: blur(8px);
+        border: 1px solid var(--card-border);
+    }
+    
+    .dot { 
+        width: 12px; 
+        height: 12px; 
+        border-radius: 50%; 
+        display: inline-block;
+        box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
+    }
+    
+    .chart-container {
+        position: relative;
+        height: 400px;
+        width: 100%;
+        background: var(--surface);
+        border-radius: 16px;
+        padding: 20px;
+        border: 1px solid var(--card-border);
+    }
+    
+    .locations { 
+        display: grid; 
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+        gap: 16px; 
+    }
+    
+    .loc { 
+        background: var(--surface);
+        backdrop-filter: blur(8px);
+        border: 1px solid var(--card-border);
+        border-radius: 16px; 
+        padding: 20px; 
+        font-size: 14px;
+        transition: all 0.2s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .loc::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: linear-gradient(135deg, var(--accent), var(--good));
+        opacity: 0;
+        transition: opacity 0.2s ease;
+    }
+    
+    .loc:hover {
+        transform: translateY(-2px);
+        border-color: var(--accent);
+        box-shadow: 0 8px 25px -8px var(--accent-glow);
+    }
+    
+    .loc > div:first-child {
+        font-weight: 600;
+        font-size: 16px;
+        color: var(--text);
+        margin-bottom: 8px;
+    }
+    
+    .loc strong {
+        color: var(--accent);
+        font-weight: 600;
+    }
+    
+    .muted { 
+        color: var(--muted);
+        font-size: 13px;
+        margin: 4px 0;
+    }
+    
+    /* Loading state */
+    .loading {
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .loading::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.1), transparent);
+        animation: shimmer 1.5s infinite;
+    }
+    
+    @keyframes shimmer {
+        0% { left: -100%; }
+        100% { left: 100%; }
+    }
+    
+    /* Smooth transitions for all interactive elements */
+    * {
+        transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    /* NEW STYLES for recommendations and LIME */
+    .details-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 24px;
+    }
+    .recommendations ul, .lime-explanation ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    .recommendations li {
+        background: var(--surface);
+        padding: 12px 16px;
+        border-radius: 12px;
+        border: 1px solid var(--card-border);
+        font-size: 15px;
+    }
+    .lime-explanation li {
+        font-family: 'Courier New', Courier, monospace;
+        background: var(--surface);
+        padding: 10px;
+        border-radius: 8px;
+        font-size: 14px;
+        color: var(--text-secondary);
+    }
+</style>
+
+{% endblock %}
+
+{% block content %}
+
 </head>
 <body>
     <header>
@@ -316,7 +318,7 @@
 
     <div class="container">
         <div class="card">
-            <div class="section-title">Animated Heatmap (3h → 72h) + Current AQI Markers</div>
+            <div class="section-title">Forecast Heatmap (3h → 72h) with Current AQI Levels</div>
             <div class="map-wrap">{{ map_html|safe }}</div>
             <div class="controls">
                 <div class="legend">
@@ -404,100 +406,106 @@
             </div>
         </div>
     </div>
+{% endblock %}
 
-    <script>
-        const initialSeries = JSON.parse('{{ chart_series|safe }}');
-        let myChart;
+{% block page_specific_js %}
+<script src="https://cdn.jsdelivr.net/npm/luxon@3.4.4/build/global/luxon.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1.3.1/dist/chartjs-adapter-luxon.umd.min.js"></script>
 
-        function drawChart(series, title) {
-            series.sort((a, b) => new Date(a.ts) - new Date(b.ts));
-            const x_labels = series.map(d => d.ts); const y_data = series.map(d => d.aqi);
-            if (myChart) { myChart.destroy(); }
-            const ctx = document.getElementById('chart');
-            myChart = new Chart(ctx, {
-                type: 'line', data: { labels: x_labels, datasets: [{ label: 'AQI Class', data: y_data, borderColor: '#38bdf8', backgroundColor: 'rgba(56, 189, 248, 0.1)', pointStyle: 'circle', pointRadius: 6, pointHoverRadius: 10, pointBackgroundColor: '#38bdf8', pointBorderColor: '#ffffff', pointBorderWidth: 2, tension: 0.4, fill: true, borderWidth: 3 }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, title: { display: true, text: title, color: '#f8fafc', font: { size: 16, weight: '600' }, padding: 20 } }, scales: { y: { title: { display: true, text: 'AQI Class (1-5)', color: '#cbd5e1', font: { size: 14, weight: '500' } }, min: 0.8, max: 5.2, ticks: { stepSize: 1, color: '#94a3b8', font: { size: 12 } }, grid: { color: 'rgba(55, 65, 81, 0.3)', drawBorder: false } }, x: { type: 'time', time: { unit: 'hour', tooltipFormat: 'dd MMM, HH:mm', displayFormats: { hour: 'EEE, HH:mm' } }, title: { display: true, text: 'Time (next 72h)', color: '#cbd5e1', font: { size: 14, weight: '500' } }, ticks: { color: '#94a3b8', font: { size: 12 } }, grid: { color: 'rgba(55, 65, 81, 0.3)', drawBorder: false } } }, interaction: { intersect: false, mode: 'index' } }
-            });
-        }
-        
-        drawChart(initialSeries, "Forecast — {{ default_location_name }}");
+<script>
+    const initialSeries = JSON.parse('{{ chart_series|safe }}');
+    let myChart;
 
-        // Functions to update the new UI sections
-        function updateRecommendations(data) {
-            const container = document.getElementById('recommendations-content');
-            container.innerHTML = ''; // Clear previous content
-            if (data.recommendations) {
-                const ul = document.createElement('ul');
-                data.recommendations.general.forEach(item => {
-                    const li = document.createElement('li');
-                    li.textContent = item;
-                    ul.appendChild(li);
-                });
-                data.recommendations.smart.forEach(item => {
-                    const li = document.createElement('li');
-                    li.textContent = item;
-                    ul.appendChild(li);
-                });
-                container.appendChild(ul);
-            } else {
-                container.innerHTML = '<p class="muted">No recommendations available.</p>';
-            }
-        }
-        
-        function updateLimeExplanation(data) {
-            const container = document.getElementById('lime-content');
-            container.innerHTML = ''; // Clear previous content
-            if (data.lime_explanation && data.lime_explanation.length > 0) {
-                const ul = document.createElement('ul');
-                data.lime_explanation.forEach(rule => {
-                    const li = document.createElement('li');
-                    li.textContent = rule[0]; // LIME rules are nested in lists
-                    ul.appendChild(li);
-                });
-                container.appendChild(ul);
-            } else {
-                container.innerHTML = '<p class="muted">No LIME explanation available.</p>';
-            }
-        }
-
-        // Add event listener to handle updates for all sections
-        document.getElementById("locationSelect").addEventListener("change", async (e) => {
-            const id = e.target.value;
-            const chartContainer = document.querySelector('.chart-container');
-            const recsContainer = document.querySelector('.recommendations');
-            const limeContainer = document.querySelector('.lime-explanation');
-            
-            // Show loading state on all cards that will be updated
-            chartContainer.classList.add('loading');
-            recsContainer.classList.add('loading');
-            limeContainer.classList.add('loading');
-            
-            // --- 1. Fetch data for the chart ---
-            try {
-                const res = await fetch(`/api/forecast_series?id=${encodeURIComponent(id)}`);
-                if (!res.ok) throw new Error(`Chart fetch failed: ${res.status}`);
-                const data = await res.json();
-                if (data.ok) {
-                    drawChart(data.series, `Forecast — ${data.name}`);
-                } else { console.error("API Error:", data.error); }
-            } catch (err) { console.error("Network or fetch error:", err); } 
-            finally { chartContainer.classList.remove('loading'); }
-
-            // --- 2. Fetch data for the details (LIME, Recommendations) ---
-            try {
-                const res = await fetch(`/api/location_details?id=${encodeURIComponent(id)}`);
-                if (!res.ok) throw new Error(`Details fetch failed: ${res.status}`);
-                const data = await res.json();
-                if (data.ok) {
-                    updateRecommendations(data);
-                    updateLimeExplanation(data);
-                } else { console.error("API Error:", data.error); }
-            } catch (err) { console.error("Network or fetch error:", err); }
-            finally { 
-                recsContainer.classList.remove('loading');
-                limeContainer.classList.remove('loading');
-            }
+    function drawChart(series, title) {
+        series.sort((a, b) => new Date(a.ts) - new Date(b.ts));
+        const x_labels = series.map(d => d.ts); const y_data = series.map(d => d.aqi);
+        if (myChart) { myChart.destroy(); }
+        const ctx = document.getElementById('chart');
+        myChart = new Chart(ctx, {
+            type: 'line', data: { labels: x_labels, datasets: [{ label: 'AQI Class', data: y_data, borderColor: '#38bdf8', backgroundColor: 'rgba(56, 189, 248, 0.1)', pointStyle: 'circle', pointRadius: 6, pointHoverRadius: 10, pointBackgroundColor: '#38bdf8', pointBorderColor: '#ffffff', pointBorderWidth: 2, tension: 0.4, fill: true, borderWidth: 3 }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, title: { display: true, text: title, color: '#f8fafc', font: { size: 16, weight: '600' }, padding: 20 } }, scales: { y: { title: { display: true, text: 'AQI Class (1-5)', color: '#cbd5e1', font: { size: 14, weight: '500' } }, min: 0.8, max: 5.2, ticks: { stepSize: 1, color: '#94a3b8', font: { size: 12 } }, grid: { color: 'rgba(55, 65, 81, 0.3)', drawBorder: false } }, x: { type: 'time', time: { unit: 'hour', tooltipFormat: 'dd MMM, HH:mm', displayFormats: { hour: 'EEE, HH:mm' } }, title: { display: true, text: 'Time (next 72h)', color: '#cbd5e1', font: { size: 14, weight: '500' } }, ticks: { color: '#94a3b8', font: { size: 12 } }, grid: { color: 'rgba(55, 65, 81, 0.3)', drawBorder: false } } }, interaction: { intersect: false, mode: 'index' } }
         });
-    </script>
-</body>
-</html>
+    }
+    
+    drawChart(initialSeries, "Forecast — {{ default_location_name }}");
+
+    // Functions to update the new UI sections
+    function updateRecommendations(data) {
+        const container = document.getElementById('recommendations-content');
+        container.innerHTML = ''; // Clear previous content
+        if (data.recommendations) {
+            const ul = document.createElement('ul');
+            data.recommendations.general.forEach(item => {
+                const li = document.createElement('li');
+                li.textContent = item;
+                ul.appendChild(li);
+            });
+            data.recommendations.smart.forEach(item => {
+                const li = document.createElement('li');
+                li.textContent = item;
+                ul.appendChild(li);
+            });
+            container.appendChild(ul);
+        } else {
+            container.innerHTML = '<p class="muted">No recommendations available.</p>';
+        }
+    }
+    
+    function updateLimeExplanation(data) {
+        const container = document.getElementById('lime-content');
+        container.innerHTML = ''; // Clear previous content
+        if (data.lime_explanation && data.lime_explanation.length > 0) {
+            const ul = document.createElement('ul');
+            data.lime_explanation.forEach(rule => {
+                const li = document.createElement('li');
+                li.textContent = rule[0]; // LIME rules are nested in lists
+                ul.appendChild(li);
+            });
+            container.appendChild(ul);
+        } else {
+            container.innerHTML = '<p class="muted">No LIME explanation available.</p>';
+        }
+    }
+
+    // Add event listener to handle updates for all sections
+    document.getElementById("locationSelect").addEventListener("change", async (e) => {
+        const id = e.target.value;
+        const chartContainer = document.querySelector('.chart-container');
+        const recsContainer = document.querySelector('.recommendations');
+        const limeContainer = document.querySelector('.lime-explanation');
+        
+        // Show loading state on all cards that will be updated
+        chartContainer.classList.add('loading');
+        recsContainer.classList.add('loading');
+        limeContainer.classList.add('loading');
+        
+        // --- 1. Fetch data for the chart ---
+        try {
+            const res = await fetch(`/api/forecast_series?id=${encodeURIComponent(id)}`);
+            if (!res.ok) throw new Error(`Chart fetch failed: ${res.status}`);
+            const data = await res.json();
+            if (data.ok) {
+                drawChart(data.series, `Forecast — ${data.name}`);
+            } else { console.error("API Error:", data.error); }
+        } catch (err) { console.error("Network or fetch error:", err); } 
+        finally { chartContainer.classList.remove('loading'); }
+
+        // --- 2. Fetch data for the details (LIME, Recommendations) ---
+        try {
+            const res = await fetch(`/api/location_details?id=${encodeURIComponent(id)}`);
+            if (!res.ok) throw new Error(`Details fetch failed: ${res.status}`);
+            const data = await res.json();
+            if (data.ok) {
+                updateRecommendations(data);
+                updateLimeExplanation(data);
+            } else { console.error("API Error:", data.error); }
+        } catch (err) { console.error("Network or fetch error:", err); }
+        finally { 
+            recsContainer.classList.remove('loading');
+            limeContainer.classList.remove('loading');
+        }
+    });
+</script>
+
+{% endblock %}

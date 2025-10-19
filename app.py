@@ -21,16 +21,8 @@ import lime
 import lime.lime_tabular
 
 import spacy
-import requests
-import os
 import re
-import json
-from datetime import datetime, timedelta
-import pandas as pd
-import numpy as np
-import joblib
 import math
-import time
 from thefuzz import process, fuzz
 
 # =========================
@@ -46,62 +38,132 @@ CACHE_WATER_FORECAST = {"data": None, "timestamp": None}
 CACHE_DURATION_MINUTES = 15
 API_KEY = "6a10ef7f599b4187e0cd396738b9fa41"
 
-# =========================
-# 1) Load Final Model and Data
-# =========================
-MODEL_PATH = os.path.join("models", "random_forest_aqi.pkl")
-LGB_BUNDLE_PATH = os.path.join("models", "lightgbm_multi.pkl")
-# --- 1. WQI Real-time Prediction Model & Explainer ---
-with open("models/xgboost_model.pkl", "rb") as file:
-    model_bundle = pickle.load(file)
-wqi_model = model_bundle["model"]
-wqi_scaler = model_bundle["scaler"]
-WQI_FEATURES = model_bundle["features"]
-X_train_wqi_df = joblib.load(os.path.join("models", "X_train_wqi.pkl"))
-wqi_shap_explainer = shap.Explainer(wqi_model)
+# ==================================
+# 1) Initialize All Models as None
+# ==================================
+# This section runs instantly on every reload
 
-wqi_lime_explainer = lime.lime_tabular.LimeTabularExplainer(
-    training_data=wqi_scaler.transform(X_train_wqi_df),
-    feature_names=WQI_FEATURES,
-    mode='regression'
-)
+# --- WQI Models & Explainers ---
+wqi_model = None
+wqi_scaler = None
+WQI_FEATURES = None
+wqi_shap_explainer = None
+wqi_lime_explainer = None
+wqi_forecast_model = None
+WQI_FORECAST_FEATURES = None
+wqi_forecast_lime_explainer = None
 
-# --- 2. WQI Forecast Model & Explainer ---
-WQI_FORECAST_MODEL_PATH = os.path.join("models", "random_forest_wqi_forecast.pkl")
-WQI_FEATURES_PATH = os.path.join("models", "wqi_forecast_features.pkl")
-X_TRAIN_WQI_FORECAST_PATH = os.path.join("models", "X_train_wqi_forecast.pkl") # Path to the new file
+# --- AQI Models & Explainers ---
+final_model = None
+lgb_model = None
+lgb_features = None
+lgb_horizons = None
+shap_explainer = None
+lime_explainer = None
+aqi_model = None
 
-# Load the model, its features, and its specific training data
-wqi_forecast_model = joblib.load(WQI_FORECAST_MODEL_PATH)
-WQI_FORECAST_FEATURES = joblib.load(WQI_FEATURES_PATH)
-print("WQI_FORECAST_FEATURES:", WQI_FORECAST_FEATURES)
-
-X_train_wqi_forecast_df = joblib.load(X_TRAIN_WQI_FORECAST_PATH)
-
-# Create the DEDICATED explainer for the forecast model
-wqi_forecast_lime_explainer = lime.lime_tabular.LimeTabularExplainer(
-    training_data=np.array(X_train_wqi_forecast_df), # Use the correct training data
-    feature_names=WQI_FORECAST_FEATURES,             # Use the correct feature list
-    class_names=['WQI_1m', 'WQI_2m', 'WQI_3m', 'WQI_4m', 'WQI_5m', 'WQI_6m'], # Names for each forecast horizon
-    mode='regression' # Still regression as it explains each output independently
-)
+# --- Chatbot Models & Knowledge Bases ---
+ner_model = None
+textcat_model = None
+AIR_KB = None
+WATER_KB = None
 
 WQI_HORIZONS = [1, 2, 3, 4, 5, 6] # In months
+LOCATIONS_CSV = "Locations.csv"
+
+# Required features for the models
+MODEL_FEATURES = [
+    "latitude", "longitude", "co", "no2", "o3", "so2", "pm2_5", "pm10",
+    "hour", "day", "month", "dayofweek", "hour_sin", "hour_cos"
+]
+
+def load_all_models_and_data():
+    """
+    Loads ALL models, data, and explainers into global scope,
+    but only on the first request that needs them.
+    """
+    # Tell Python we intend to modify all the global variables
+    global wqi_model, wqi_scaler, WQI_FEATURES, wqi_shap_explainer, wqi_lime_explainer
+    global wqi_forecast_model, WQI_FORECAST_FEATURES, wqi_forecast_lime_explainer
+    global final_model, lgb_model, lgb_features, lgb_horizons, shap_explainer, lime_explainer, aqi_model
+    global ner_model, textcat_model, AIR_KB, WATER_KB
+
+    # ✅ Check if the models are already loaded. If one is None, load all of them.
+    if final_model is None:
+        print("--- Loading all models and data for the first time... ---")
+        
+        # --- 1. Load Chatbot Models & KBs ---
+        print("Loading NER model...")
+        ner_model = spacy.load("./ner_model_final_final8")
+        print("Loading Textcat model...")
+        textcat_model = spacy.load("./textcat_model_final_final7")
+
+        print("Loading knowledge bases...")
+        with open("kb_air.json", 'r', encoding="utf8") as f:
+            AIR_KB = json.load(f)
+        with open("kb_water.json", 'r', encoding="utf8") as f:
+            WATER_KB = json.load(f)
+
+        # --- 2. Load AQI Classifier & Explainers ---
+        print("Loading AQI classifier...")
+        MODEL_PATH = os.path.join("models", "random_forest_aqi.pkl")
+        final_model = joblib.load(MODEL_PATH)
+        aqi_model = joblib.load(MODEL_PATH)
+        
+        print("Creating AQI explainers...")
+        shap_explainer = shap.TreeExplainer(final_model)
+        lime_explainer = lime.lime_tabular.LimeTabularExplainer(
+            training_data=np.random.rand(100, len(MODEL_FEATURES)),
+            feature_names=MODEL_FEATURES,
+            class_names=['AQI 1', 'AQI 2', 'AQI 3', 'AQI 4', 'AQI 5'],
+            mode='classification'
+        )
+        
+        print("Loading AQI forecast model...")
+        LGB_BUNDLE_PATH = os.path.join("models", "lightgbm_multi.pkl")
+        lgb_bundle = joblib.load(LGB_BUNDLE_PATH)
+        lgb_model = lgb_bundle["model"]
+        lgb_features = lgb_bundle["features"]
+        lgb_horizons = lgb_bundle["horizons"]
+
+        # --- 3. Load WQI Models & Explainers ---
+        print("Loading WQI real-time model bundle...")
+        with open("models/xgboost_model.pkl", "rb") as file:
+            model_bundle = pickle.load(file)
+        wqi_model = model_bundle["model"]
+        wqi_scaler = model_bundle["scaler"]
+        WQI_FEATURES = model_bundle["features"]
+        
+        print("Creating WQI explainers...")
+        X_train_wqi_df = joblib.load(os.path.join("models", "X_train_wqi.pkl"))
+        wqi_shap_explainer = shap.Explainer(wqi_model)
+        wqi_lime_explainer = lime.lime_tabular.LimeTabularExplainer(
+            training_data=wqi_scaler.transform(X_train_wqi_df),
+            feature_names=WQI_FEATURES,
+            mode='regression'
+        )
+
+        # --- 4. Load WQI Forecast Model & Explainer ---
+        print("Loading WQI forecast model bundle...")
+        WQI_FORECAST_MODEL_PATH = os.path.join("models", "random_forest_wqi_forecast.pkl")
+        WQI_FEATURES_PATH = os.path.join("models", "wqi_forecast_features.pkl")
+        X_TRAIN_WQI_FORECAST_PATH = os.path.join("models", "X_train_wqi_forecast.pkl")
+
+        wqi_forecast_model = joblib.load(WQI_FORECAST_MODEL_PATH)
+        WQI_FORECAST_FEATURES = joblib.load(WQI_FEATURES_PATH)
+        X_train_wqi_forecast_df = joblib.load(X_TRAIN_WQI_FORECAST_PATH)
+
+        print("Creating WQI forecast explainer...")
+        wqi_forecast_lime_explainer = lime.lime_tabular.LimeTabularExplainer(
+            training_data=np.array(X_train_wqi_forecast_df),
+            feature_names=WQI_FORECAST_FEATURES,
+            class_names=['WQI_1m', 'WQI_2m', 'WQI_3m', 'WQI_4m', 'WQI_5m', 'WQI_6m'],
+            mode='regression'
+        )
+        
+        print("--- All models and data loaded successfully. ---")
 
 # ------------- CHATBOT imports -----------------
-
-print("Loading NER model...")
-ner_model = spacy.load("./ner_model_final_final8")
-print("Loading Textcat model...")
-textcat_model = spacy.load("./textcat_model_final_final7")
-
-with open("kb_air.json", 'r', encoding="utf8") as f:
-    AIR_KB = json.load(f)
-with open("kb_water.json", 'r', encoding="utf8") as f:
-    WATER_KB = json.load(f)
-
-aqi_model = joblib.load("models/random_forest_aqi.pkl")
-print("Loading rf model...")
 
 SUPPORTED_LOCATIONS = {"panvel", "vashi", "airoli", "nerul", "thane", "worli", "juhu", "versova", "badlapur", "ambernath", "powai"}
 locations_df = pd.read_csv("locations_chatbot.csv")
@@ -355,16 +417,16 @@ def map_wqi_to_category(wqi_value):
     else: return "Very Poor"
 
 REPRESENTATIVE_WQI = {
-    "Vashi": 59,
-    "Panvel": 58,
-    "Badlapur": 81,
-    "Thane": 52,
-    "Airoli": 51,
-    "Ambernath": 86,
+    "Vashi": 65,
+    "New Panvel": 78,
+    "Badlapur": 88,
+    "Thane": 75,
+    "Airoli": 71,
+    "Ambernath": 90,
     "Nerul": 52,
-    "Mumbai": 50,
-    "Juhu": 53,
-    "Worli": 54
+    "Mumbai": 57,
+    "Juhu": 54,
+    "Worli": 62
 }
 
 def get_recommendation_for_aqi_value(value):
@@ -833,40 +895,7 @@ def get_chatbot_response(user_input, predicted_intent, extracted_entities, score
             return {"response": response_text, "session_data": session_data}
 
     return {"response": response_text, "session_data": session_data}
-# ------------ END OF CHATBOT --------------------
-
-LOCATIONS_CSV = "Locations.csv"
-
-# Check if files exist before loading
-if not os.path.exists(MODEL_PATH) or not os.path.exists(LGB_BUNDLE_PATH) or not os.path.exists(LOCATIONS_CSV):
-    raise FileNotFoundError("One or more required files (models or locations.csv) are missing.")
-
-# --- Load the final chosen model ---
-print("Loading final classifier model...")
-final_model = joblib.load(MODEL_PATH)
-print("Model loaded successfully.")
-
-# Load the model for future predictions
-lgb_bundle = joblib.load(LGB_BUNDLE_PATH)
-lgb_model = lgb_bundle["model"]
-lgb_features = lgb_bundle["features"]
-lgb_horizons = lgb_bundle["horizons"]
-
-# Required features for the models
-MODEL_FEATURES = [
-    "latitude", "longitude", "co", "no2", "o3", "so2", "pm2_5", "pm10",
-    "hour", "day", "month", "dayofweek", "hour_sin", "hour_cos"
-]
-
-# --- Initialize Explainers for the Classifier ---
-shap_explainer = shap.TreeExplainer(final_model)
-
-lime_explainer = lime.lime_tabular.LimeTabularExplainer(
-    training_data=np.random.rand(100, len(MODEL_FEATURES)),
-    feature_names=MODEL_FEATURES,
-    class_names=['AQI 1', 'AQI 2', 'AQI 3', 'AQI 4', 'AQI 5'],
-    mode='classification'
-)
+# ---------------------------------------- END OF CHATBOT ---------------------------------------
 
 locations_df = pd.read_csv(LOCATIONS_CSV)
 LOCATIONS = [
@@ -881,8 +910,8 @@ LOCATIONS = [
 def aqi_color(aqi_class: int) -> str:
     """Returns a color hex code based on AQI class."""
     return {
-        1: "#2ecc71", 2: "#f1c40f", 3: "#e67e22",
-        4: "#e74c3c", 5: "#8e44ad"
+        1: "#00B050", 2: "#92D050", 3: "#FFFF00",
+        4: "#FF9900", 5: "#FF0000"
     }.get(int(aqi_class), "#7f8c8d")
 
 def wqi_color(wqi_value: float) -> str:
@@ -1251,6 +1280,8 @@ def get_all_water_data():
 
 # 1. Load data once when the app starts, inside the app context
 with app.app_context():
+    load_all_models_and_data()
+    
     ALL_WATER_DATA = get_all_water_data()
     ALL_WATER_FORECASTS = get_all_water_forecasts()
 
@@ -1484,7 +1515,7 @@ def predict_all_locations():
     CACHE["data"] = results
     CACHE["timestamp"] = datetime.now()
     return results
-
+    
 def lgb_predict_future(features: dict) -> dict:
     feats = add_time_features(features)
     X = pd.DataFrame([feats]).reindex(columns=lgb_features, fill_value=0)
@@ -1519,9 +1550,16 @@ def build_full_dashboard_map():
     for p in all_preds:
         col = aqi_color(p["aqi_now"])
         tooltip_text = f"<b>{p['full_name']}</b><br>AQI (now): <b>{p['aqi_now']}</b>"
+        popup_html = f"""
+        <h4>{p['full_name']}</h4>
+        <b>Current AQI: {p['aqi_now']}</b><br>
+        72h Forecast Trend: <b>{p['forecast']}</b>
+        <hr style='margin: 5px 0;'>
+        <i>See the chart below for hourly details.</i>
+        """
         folium.CircleMarker(
             location=[p["lat"], p["lon"]], radius=9, color=col, fill=True,
-            fill_color=col, fill_opacity=0.9, tooltip=tooltip_text, popup=tooltip_text
+            fill_color=col, fill_opacity=0.9, tooltip=tooltip_text, popup=folium.Popup(popup_html, max_width=250)
         ).add_to(m)
     time_slices, time_labels, now = [], [], datetime.now()
     for h in lgb_horizons:
@@ -1624,6 +1662,7 @@ def api_predict_wqi():
 @app.route("/api/chat", methods=["POST"])
 def api_chat():
     """API endpoint for the chatbot to receive and respond to messages."""
+    load_all_models_and_data()
     user_input = request.json.get("message", "")
     session_data = request.json.get("session_data", {}) 
     if not user_input:
@@ -1638,13 +1677,13 @@ def api_chat():
     doc_ner = ner_model(user_input)
     extracted_entities = [(ent.text, ent.label_) for ent in doc_ner.ents]
 
-    # --- Debug Prints for Your Terminal ---
-    print("\n--- CHATBOT DEBUG ---")
-    print(f"User Input: '{user_input}'")
-    print(f"--> Predicted Intent: {predicted_intent} (Score: {score:.2f})")
-    if extracted_entities:
-        print(f"--> Extracted Entities: {extracted_entities}")
-    print("---------------------\n")
+    # # --- Debug Prints for Your Terminal ---
+    # print("\n--- CHATBOT DEBUG ---")
+    # print(f"User Input: '{user_input}'")
+    # print(f"--> Predicted Intent: {predicted_intent} (Score: {score:.2f})")
+    # if extracted_entities:
+    #     print(f"--> Extracted Entities: {extracted_entities}")
+    # print("---------------------\n")
     
     # Pass the NLP results to your main logic function
     response_data = get_chatbot_response(

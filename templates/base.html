@@ -47,10 +47,12 @@
         /* Chat Window */
         .chat-window {
             position: fixed;
-            bottom: 100px;
-            right: 30px;
-            width: 540px;
-            height: 660px;
+            bottom: 85px;
+            right: 15px;
+            width: 90vw;
+            max-width: 400px;
+            height: 70vh;
+            max-height: 550px;
             background: white;
             border: 1px solid #e0e0e0;
             border-radius: 18px;
@@ -69,7 +71,7 @@
 
         /* Chat Header */
         .chat-header { padding:0.8rem 1rem; background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple)); color:white; border-bottom: none; display: flex; justify-content: space-between; align-items: center; font-weight: 600; box-shadow: 0 2px 5px rgba(0,0,0,0.1);}
-        .chat-header span { font-size: 1.1em; }
+        .chat-header span { font-size: 1em; }
         /* Chat Close Button */
         .chat-close-btn { background: none; border: none; color: white; font-size: 28px; cursor: pointer; padding: 0 5px; transition: transform 0.2s ease;}
 
@@ -86,7 +88,7 @@
             box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.2);
         }
 
-        #chat-input { flex-grow: 1; background: transparent; border: none; color: #333; padding: 0.2rem; font-size: 1rem; outline: none; transition: border-color 0.2s ease, box-shadow 0.2s ease;}
+        #chat-input { flex-grow: 1; background: transparent; border: none; color: #333; padding: 0.2rem; font-size: 0.95rem; outline: none; transition: border-color 0.2s ease, box-shadow 0.2s ease;}
         
         /* Send Button/Icon */
         #chat-form button { border: none; background: var(--accent-purple); color: white; width: 40px; height: 40px; padding: 0.5rem 1rem; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; transition: background-color 0.2s ease, transform 0.1s ease;font-weight: 600; cursor: pointer;  flex-shrink: 0;}
@@ -101,7 +103,7 @@
         }
 
         /* Message Bubbles */
-        .message { max-width: 80%; padding: 0.8rem 1rem; border-radius: 12px; line-height: 1.4; font-size: 1.1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.08); line-height: 1.5;}
+        .message { max-width: 80%; padding: 0.8rem 1rem; border-radius: 12px; line-height: 1.4; font-size: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.08); line-height: 1.4;}
         .user-message { background-color: #e0e0e0; color: #333; align-self: flex-end; border-bottom-right-radius: 6px;}
         .bot-message { background-color: #ffffff; color: black; align-self: flex-start; border: 1px solid #f0f0f0; border-bottom-left-radius: 6px;}
     </style>
@@ -127,6 +129,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>
         // CHATBOT
         const chatBubble = document.getElementById('chat-bubble');
@@ -183,7 +186,7 @@
                 const data = await response.json();
 
                 // Replace the "typing" message with the actual response
-                typingIndicator.innerHTML = data.response;
+                typingIndicator.innerHTML = marked.parse(data.response);
                 sessionData = data.session_data;
 
             } catch (error) {
