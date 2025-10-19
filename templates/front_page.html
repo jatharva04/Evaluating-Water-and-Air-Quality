@@ -360,6 +360,20 @@
             transform: translateX(-50%) translateY(-5px);
         }
     }
+
+    .spinner {
+        display: inline-block;
+        width: 1rem;
+        height: 1rem;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: #fff;
+        animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
 </style>
 
 {% endblock %}
@@ -412,11 +426,14 @@
         </svg>
     </div>
 </div>
-    
+{% endblock %}
+
+{% block page_specific_js %}
 <script>
     // Create animated particles
     function createParticles() {
         const bgAnimation = document.querySelector('.bg-animation');
+        if (!bgAnimation) return;
         const particleCount = 50;
         
         for (let i = 0; i < particleCount; i++) {
@@ -444,29 +461,42 @@
         });
     });
 
-    // Feature card hover effects with sound-like ripple
-    document.querySelectorAll('.feature-card').forEach(card => {
-        card.addEventListener('mouseenter', function() {
-            this.style.transform = 'translateY(-10px) scale(1.02)';
-        });
-        
-        card.addEventListener('mouseleave', function() {
-            this.style.transform = 'translateY(0) scale(1)';
-        });
-    });
+    document.addEventListener('DOMContentLoaded', () => {
+        // 1. Initialize particles
+        createParticles();
 
-    // Initialize particles when page loads
-    document.addEventListener('DOMContentLoaded', createParticles);
+        // 2. Setup for the "Launch Dashboard" button's loading state
+        const launchButton = document.querySelector('.btn-primary');
+        if (launchButton) {
+            launchButton.addEventListener('click', function() {
+                this.setAttribute('disabled', 'true');
+                this.innerHTML = `
+                    <span class="spinner"></span>
+                    <span>Loading Latest Data... Please wait</span>
+                `;
+                this.style.opacity = '0.7';
+                this.style.cursor = 'wait';
+            });
+        }
 
-    // Smooth scroll for scroll hint
-    document.querySelector('.scroll-hint').addEventListener('click', () => {
-        window.scrollBy({
-            top: window.innerHeight,
-            behavior: 'smooth'
+        // 3. Setup for feature card hover effects
+        document.querySelectorAll('.feature-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-10px) scale(1.02)';
+            });
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
         });
+
+        // 4. Setup for the smooth scroll hint
+        const scrollHint = document.querySelector('.scroll-hint');
+        if (scrollHint) {
+            scrollHint.addEventListener('click', () => {
+                window.scrollBy({ top: window.innerHeight, behavior: 'smooth' });
+            });
+        }
     });
 </script>
-{% endblock %}
 
-</body>
-</html>
+{% endblock %}
