@@ -7,7 +7,7 @@
     },
     "pm10": {
         "info": "Particulate Matter 10 (PM10) are airborne particles that do not exceed 10 micrometers in diameter. According to the WHO, the limit value of the average daily concentration of this particulate matter is 50 micrograms per cubic meter, and the annual limit value is 20 micrograms per cubic meter. Main sources are combustion processes (e.g. indoor heating, wildfires), mechanical processes (e.g. construction, mineral dust, agriculture) and biological particles (e.g. pollen, bacteria, mold).",
-        "effects": "Health effects of PM₂.₅ are serious. Inhalable particles can penetrate into the lungs. Short term exposure can cause irritation of the airways, coughing, and aggravation of heart and lung diseases, expressed as difficulty breathing, heart attacks and even premature death."
+        "effects": "Health effects of PM10 are serious. Inhalable particles can penetrate into the lungs. Short term exposure can cause irritation of the airways, coughing, and aggravation of heart and lung diseases, expressed as difficulty breathing, heart attacks and even premature death."
     },
 
     "o3" : {
@@ -32,7 +32,7 @@
 
     "pollutants": "Pollutants are particles and gasses in the air that, in high concentration, can be harmful to people's health. Air Quality includes detailed descriptions of each pollutant to help people understand the source of emissions and health effects. the six included pollutants are: Ozone (O3) Sulfur Dioxide (SO2) Carbon Monoxide (CO) Nitrogen Dioxide (NO2) Fine Particulate Matter (PM2.5) Fine & Coarse Particulate Matter (PM10)",
 
-    "sensors": "These devices use laser and an electrochemical methodsto detect pollutants like PM2.5 and ozone. Readings are obtained using the two cells installed in the sensor’s gas module. Each cell has a special diode whose colours alter depending on the current air quality. A user who has necessary instructions knows how to interpret received messages",
+    "sensors": "These devices use laser and an electrochemical methods to detect pollutants like PM2.5 and ozone. Readings are obtained using the two cells installed in the sensor’s gas module. Each cell has a special diode whose colours alter depending on the current air quality. A user who has necessary instructions knows how to interpret received messages",
 
     "sources_air": "Air pollution is contamination of the indoor or outdoor environment by any chemical, physical or biological agent that modifies the natural characteristics of the atmosphere. Household combustion devices, motor vehicles, industrial facilities and forest fires are common sources of air pollution. ",
 

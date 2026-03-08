@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,16 +13,17 @@
 
     <style>
         :root {
-        --primary-bg: #0a0a0f;
-        --secondary-bg: #1a1a2e;
-        --accent-blue: #00d4ff;
-        --accent-green: #00ff88;
-        --accent-purple: #8b5cf6;
-        --text-primary: #ffffff;
-        --text-secondary: #a8b2d1;
-        --glass-bg: rgba(255, 255, 255, 0.05);
-        --glass-border: rgba(255, 255, 255, 0.1);
-    }
+            --primary-bg: #0a0a0f;
+            --secondary-bg: #1a1a2e;
+            --accent-blue: #00d4ff;
+            --accent-green: #00ff88;
+            --accent-purple: #8b5cf6;
+            --text-primary: #ffffff;
+            --text-secondary: #a8b2d1;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
         /* Chat Widget CSS */
 
         /* Chat Bubble (the floating button) */
@@ -39,12 +41,16 @@
             align-items: center;
             font-size: 28px;
             cursor: pointer;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
             z-index: 999;
             /* transition: transform 0.2s; */
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
-        .chat-bubble:hover { transform: scale(1.1); box-shadow: 0 8px 20px rgba(0,0,0,0.4);}
+
+        .chat-bubble:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        }
 
         /* Chat Window */
         .chat-window {
@@ -58,7 +64,7 @@
             background: white;
             border: 1px solid #e0e0e0;
             border-radius: 18px;
-            box-shadow: 0 10px 30px rgba(0,0,0,.15);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, .15);
             display: flex;
             flex-direction: column;
             z-index: 1000;
@@ -67,22 +73,68 @@
             transition: transform 0.3s ease-in-out;
             overflow: hidden;
         }
+
         .chat-window.open {
             transform: scale(1);
         }
 
         /* Chat Header */
-        .chat-header { padding:0.8rem 1rem; background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple)); color:white; border-bottom: none; display: flex; justify-content: space-between; align-items: center; font-weight: 600; box-shadow: 0 2px 5px rgba(0,0,0,0.1);}
-        .chat-header span { font-size: 1em; }
+        .chat-header {
+            padding: 0.8rem 1rem;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+            color: white;
+            border-bottom: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .chat-header span {
+            font-size: 1em;
+        }
+
         /* Chat Close Button */
-        .chat-close-btn { background: none; border: none; color: white; font-size: 28px; cursor: pointer; padding: 0 5px; transition: transform 0.2s ease;}
+        .chat-close-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+            padding: 0 5px;
+            transition: transform 0.2s ease;
+        }
 
         /* Chat Body (Message Container) */
-        .chat-body { flex-grow: 1; padding: 1rem; overflow-y: auto; display: flex; flex-direction: column; gap: 0.75rem; background-color: #f8f9fa; scrollbar-width: thin; scrollbar-color: var(--accent-purple) #f0f0f0;}
+        .chat-body {
+            flex-grow: 1;
+            padding: 1rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            background-color: #f8f9fa;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent-purple) #f0f0f0;
+        }
 
         /* Chat Footer (Input Area) */
-        .chat-footer { padding: 0; border-top: 1px solid #e0e0e0; background-color: #ffffff;}
-        #chat-form { display: flex;  gap: 0.5rem; align-items: center; padding: 0.5rem 0.75rem; border: 1px solid #dcdcdc; background-color: #f0f2f5; transition: border-color 0.2s ease, box-shadow 0.2s ease;}
+        .chat-footer {
+            padding: 0;
+            border-top: 1px solid #e0e0e0;
+            background-color: #ffffff;
+        }
+
+        #chat-form {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #dcdcdc;
+            background-color: #f0f2f5;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
 
         /* ADD THIS NEW RULE for the focused state */
         #chat-form.form-focused {
@@ -90,27 +142,181 @@
             box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.2);
         }
 
-        #chat-input { flex-grow: 1; background: transparent; border: none; color: #333; padding: 0.2rem; font-size: 0.95rem; outline: none; transition: border-color 0.2s ease, box-shadow 0.2s ease;}
-        
+        #chat-input {
+            flex-grow: 1;
+            background: transparent;
+            border: none;
+            color: #333;
+            padding: 0.2rem;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
         /* Send Button/Icon */
-        #chat-form button { border: none; background: var(--accent-purple); color: white; width: 40px; height: 40px; padding: 0.5rem 1rem; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; transition: background-color 0.2s ease, transform 0.1s ease;font-weight: 600; cursor: pointer;  flex-shrink: 0;}
+        #chat-form button {
+            border: none;
+            background: var(--accent-purple);
+            color: white;
+            width: 40px;
+            height: 40px;
+            padding: 0.5rem 1rem;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2rem;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            font-weight: 600;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
         #chat-form button:hover:not(:disabled) {
-            background: var(--accent-blue); /* Blue on hover when enabled */
+            background: var(--accent-blue);
+            /* Blue on hover when enabled */
             transform: scale(1.05);
         }
+
         #chat-form button:disabled {
-            background-color: #cccccc; /* Gray when disabled */
+            background-color: #cccccc;
+            /* Gray when disabled */
             cursor: not-allowed;
             opacity: 0.7;
         }
 
         /* Message Bubbles */
-        .message { max-width: 80%; padding: 0.8rem 1rem; border-radius: 12px; line-height: 1.4; font-size: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.08); line-height: 1.4;}
-        .user-message { background-color: #e0e0e0; color: #333; align-self: flex-end; border-bottom-right-radius: 6px;}
-        .bot-message { background-color: #ffffff; color: black; align-self: flex-start; border: 1px solid #f0f0f0; border-bottom-left-radius: 6px;}
+        .message {
+            max-width: 80%;
+            padding: 0.8rem 1rem;
+            border-radius: 12px;
+            line-height: 1.4;
+            font-size: 1rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            line-height: 1.4;
+        }
+
+        .user-message {
+            background-color: #e0e0e0;
+            color: #333;
+            align-self: flex-end;
+            border-bottom-right-radius: 6px;
+        }
+
+        .bot-message {
+            background-color: #ffffff;
+            color: black;
+            align-self: flex-start;
+            border: 1px solid #f0f0f0;
+            border-bottom-left-radius: 6px;
+        }
+
+        /* ── Global Navigation Bar ── */
+        .global-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1.5rem;
+            height: 52px;
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 900;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            text-decoration: none;
+            color: #f1f5f9;
+            font-weight: 700;
+            font-size: 1.05rem;
+            letter-spacing: 0.3px;
+            transition: opacity 0.2s;
+        }
+
+        .nav-brand:hover {
+            opacity: 0.85;
+        }
+
+        .nav-brand img {
+            width: 26px;
+            height: 26px;
+            border-radius: 6px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .nav-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.4rem 0.9rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #94a3b8;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            color: #e2e8f0;
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .nav-link.active {
+            color: #38bdf8;
+            background: rgba(56, 189, 248, 0.1);
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 18px;
+            height: 2px;
+            border-radius: 1px;
+            background: #38bdf8;
+        }
+
+        .nav-link .nav-icon {
+            font-size: 1rem;
+        }
     </style>
 </head>
+
 <body>
+    {% if request.endpoint != 'pages.landing_page' %}
+    <nav class="global-nav">
+        <a href="/" class="nav-brand">
+            <!-- <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo">
+            EnviroAI -->
+        </a>
+        <div class="nav-links">
+            <a href="/dashboard" class="nav-link {{ 'active' if request.endpoint == 'pages.dashboard' }}">
+                <span class="nav-icon">📊</span> Overview
+            </a>
+            <a href="/air_dashboard" class="nav-link {{ 'active' if request.endpoint == 'pages.air_dashboard' }}">
+                <span class="nav-icon">💨</span> Air Quality
+            </a>
+            <a href="/water_dashboard" class="nav-link {{ 'active' if request.endpoint == 'pages.water_dashboard' }}">
+                <span class="nav-icon">💧</span> Water Quality
+            </a>
+        </div>
+    </nav>
+    {% endif %}
     {% block content %}{% endblock %}
 
     <div class="chat-bubble" id="chat-bubble">🤖</div>
@@ -125,7 +331,7 @@
         <div class="chat-footer">
             <form id="chat-form">
                 <input type="text" id="chat-input" placeholder="Ask a question..." autocomplete="off">
-                <button type="submit" id="chat-send-btn" disabled><i class="fas fa-paper-plane"></i></button> </form>
+                <button type="submit" id="chat-send-btn" disabled><i class="fas fa-paper-plane"></i></button>
             </form>
         </div>
     </div>
@@ -153,7 +359,7 @@
             chatSendBtn.disabled = chatInput.value.trim() === '';
         });
         // Set initial state
-        chatSendBtn.disabled = true; 
+        chatSendBtn.disabled = true;
 
         // Add the 'form-focused' class when the user clicks in the input
         chatInput.addEventListener('focus', () => {
@@ -191,6 +397,9 @@
                 typingIndicator.innerHTML = marked.parse(data.response);
                 sessionData = data.session_data;
 
+                // Auto-scroll to the bottom immediately after rendering the new text
+                chatBody.scrollTop = chatBody.scrollHeight;
+
             } catch (error) {
                 console.error('Error:', error);
                 typingIndicator.textContent = 'Sorry, something went wrong.';
@@ -207,7 +416,15 @@
             return messageDiv; // Return the element to allow modification (for the typing indicator)
         }
 
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && chatWindow.classList.contains('open')) {
+                chatWindow.classList.remove('open');
+            }
+        });
+
+
     </script>
     {% block page_specific_js %}{% endblock %}
 </body>
+
 </html>

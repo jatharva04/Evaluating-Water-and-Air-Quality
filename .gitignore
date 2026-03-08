@@ -1,8 +1,15 @@
+# ML Models (Heavy binaries - Share via Drive/Cloud)
+models/
 *.pkl
-major project data air.csv
-LocationsRaw.csv
-*.ipynb_checkpoints/
+
+# Local Analysis Artifacts (SHAP/LIME results)
+outputs/
+*.html
+*.png
+
+# Python & Environment
 __pycache__/
+<<<<<<< HEAD
 lime_explanation (1).html
 shap_single_prediction (1).html
 ner_model_final_final8
@@ -10,3 +17,18 @@ ner_model_final_final7
 textcat_model_final_final8
 textcat_model_final_final7
 venv/
+=======
+venv/
+.env
+.vscode/
+
+# Dataset Files (Avoiding heavy raw data)
+data/major project data air.csv
+data/LocationsRaw.csv
+
+# Local Testing Scripts
+scripts/
+test.py
+check_google_aqi.py
+inspect_features.py
+>>>>>>> 67a7476 (Refactor: Update architecture, move runtime datasets to data/, and implement dashboard features)

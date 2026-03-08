@@ -41,7 +41,7 @@
   },
   
   "tds": {
-    "info": "Total Dissolved Solids (TDS) represents the total concentration of all dissolved substances in water, including minerals, salts, and organic matter. It is often measured in parts per million (ppm). The safe limit for nitrates in drinking water is 50 mg/L",
+    "info": "Total Dissolved Solids (TDS) represents the total concentration of all dissolved substances in water, including minerals, salts, and organic matter. It is often measured in parts per million (ppm).",
     "effects": "While some minerals are beneficial, very high TDS levels (above 500 ppm) can give water a salty, bitter, or metallic taste. Extremely high levels may indicate the presence of toxic minerals and can cause scaling in pipes and appliances."
   },
 
