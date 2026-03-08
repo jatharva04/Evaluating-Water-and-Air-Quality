@@ -6,7 +6,7 @@
 
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-    
+
     :root {
         --bg: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
         --card: rgba(17, 24, 39, 0.85);
@@ -23,36 +23,35 @@
         --unhealthy: #FF9900;
         --very-unhealthy: #FF0000;
     }
-    
-    * { 
-        box-sizing: border-box; 
+
+    * {
+        box-sizing: border-box;
     }
-    
-    body { 
-        margin: 0; 
+
+    body {
+        margin: 0;
         background: var(--bg);
         background-attachment: fixed;
         color: var(--text);
         font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
         line-height: 1.6;
     }
-    
-    header { 
-        padding: 24px 32px; 
+
+    header {
+        padding: 24px 32px;
         border-bottom: 1px solid var(--card-border);
         backdrop-filter: blur(12px);
         background: rgba(15, 23, 42, 0.9);
-        display: flex; 
-        align-items: center; 
+        display: flex;
+        align-items: center;
         gap: 16px;
-        position: sticky;
-        top: 0;
+        position: relative;
         z-index: 100;
     }
-    
-    header h1 { 
-        margin: 0; 
-        font-size: 28px; 
+
+    header h1 {
+        margin: 0;
+        font-size: 28px;
         font-weight: 700;
         letter-spacing: -0.025em;
         background: linear-gradient(135deg, var(--text) 0%, var(--accent) 100%);
@@ -60,30 +59,49 @@
         -webkit-text-fill-color: transparent;
         background-clip: text;
     }
-    
-    .container { 
-        padding: 32px; 
-        display: grid; 
-        grid-template-columns: 1fr; 
-        gap: 24px; 
-        max-width: 1400px; 
-        margin: 0 auto; 
+
+    .last-updated {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--muted);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        margin-left: auto;
     }
-    
-    .card { 
+
+    .last-updated i {
+        font-size: 0.8rem;
+        color: var(--accent);
+    }
+
+    .container {
+        padding: 32px;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 24px;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .card {
         background: var(--card);
         backdrop-filter: blur(20px);
         border: 1px solid var(--card-border);
-        border-radius: 20px; 
-        padding: 24px; 
-        box-shadow: 
+        border-radius: 20px;
+        padding: 24px;
+        box-shadow:
             0 20px 25px -5px rgba(0, 0, 0, 0.1),
             0 10px 10px -5px rgba(0, 0, 0, 0.04);
         transition: transform 0.2s ease, box-shadow 0.2s ease;
         position: relative;
         overflow: hidden;
     }
-    
+
     .card::before {
         content: '';
         position: absolute;
@@ -94,17 +112,17 @@
         background: linear-gradient(90deg, transparent, var(--accent), transparent);
         opacity: 0.6;
     }
-    
+
     .card:hover {
         transform: translateY(-2px);
-        box-shadow: 
+        box-shadow:
             0 25px 50px -12px rgba(0, 0, 0, 0.25),
             0 0 0 1px rgba(56, 189, 248, 0.05);
     }
-    
-    .section-title { 
-        margin: 0 0 20px 0; 
-        font-size: 18px; 
+
+    .section-title {
+        margin: 0 0 20px 0;
+        font-size: 18px;
         font-weight: 600;
         color: var(--text-secondary);
         letter-spacing: -0.025em;
@@ -112,7 +130,7 @@
         align-items: center;
         gap: 12px;
     }
-    
+
     .section-title::before {
         content: '';
         width: 4px;
@@ -120,54 +138,60 @@
         background: linear-gradient(135deg, var(--accent), var(--good));
         border-radius: 2px;
     }
-    
-    .map-wrap { 
-        overflow: hidden; 
+
+    .map-wrap {
+        overflow: hidden;
         border-radius: 16px;
         border: 1px solid var(--card-border);
         box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
     }
-    
-    .controls { 
-        display: flex; 
-        align-items: center; 
-        gap: 16px; 
-        padding: 8px 0 20px; 
-        flex-wrap: wrap; 
+
+    .controls {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 8px 0 20px;
+        flex-wrap: wrap;
     }
-    
-    select { 
-        background: var(--surface);
-        backdrop-filter: blur(8px);
-        color: var(--text); 
-        border: 1px solid var(--card-border);
-        border-radius: 12px; 
-        padding: 12px 16px; 
-        font-size: 14px; 
-        font-weight: 500;
+
+    select {
+        background: #1e293b;
+        color: var(--text);
+        border: 1px solid #334155;
+        border-radius: 8px;
+        padding: 10px 14px;
+        padding-right: 36px;
+        font-size: 14px;
         cursor: pointer;
-        transition: all 0.2s ease;
+        width: 100%;
+        max-width: 400px;
         outline: none;
-        min-width: 200px;
+        appearance: none;
+        background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2214%22%20height%3D%228%22%20viewBox%3D%220%200%2014%208%22%20fill%3D%22none%22%3E%3Cpath%20d%3D%22M1%201L7%207L13%201%22%20stroke%3D%22%239CA3AF%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E");
+        background-repeat: no-repeat;
+        background-position: right 14px center;
+        background-size: 12px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: all 0.2s ease;
     }
-    
+
     select:hover {
-        border-color: var(--accent);
-        background: rgba(56, 189, 248, 0.05);
+        border-color: #475569;
+        background-color: #0f172a;
     }
-    
+
     select:focus {
         border-color: var(--accent);
-        box-shadow: 0 0 0 3px var(--accent-glow);
+        box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
     }
-    
-    .legend { 
-        display: inline-grid; 
-        grid-template-columns: repeat(5, auto auto); 
-        gap: 8px 16px; 
-        align-items: center; 
-        margin-left: auto; 
-        color: var(--muted); 
+
+    .legend {
+        display: inline-grid;
+        grid-template-columns: repeat(5, auto auto);
+        gap: 8px 16px;
+        align-items: center;
+        margin-left: auto;
+        color: var(--muted);
         font-size: 13px;
         font-weight: 500;
         padding: 12px 20px;
@@ -176,15 +200,15 @@
         backdrop-filter: blur(8px);
         border: 1px solid var(--card-border);
     }
-    
-    .dot { 
-        width: 12px; 
-        height: 12px; 
-        border-radius: 50%; 
+
+    .dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
         display: inline-block;
         box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
     }
-    
+
     .chart-container {
         position: relative;
         height: 400px;
@@ -194,25 +218,25 @@
         padding: 20px;
         border: 1px solid var(--card-border);
     }
-    
-    .locations { 
-        display: grid; 
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
-        gap: 16px; 
+
+    .locations {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 16px;
     }
-    
-    .loc { 
+
+    .loc {
         background: var(--surface);
         backdrop-filter: blur(8px);
         border: 1px solid var(--card-border);
-        border-radius: 16px; 
-        padding: 20px; 
+        border-radius: 16px;
+        padding: 20px;
         font-size: 14px;
         transition: all 0.2s ease;
         position: relative;
         overflow: hidden;
     }
-    
+
     .loc::before {
         content: '';
         position: absolute;
@@ -224,37 +248,37 @@
         opacity: 0;
         transition: opacity 0.2s ease;
     }
-    
+
     .loc:hover {
         transform: translateY(-2px);
         border-color: var(--accent);
         box-shadow: 0 8px 25px -8px var(--accent-glow);
     }
-    
-    .loc > div:first-child {
+
+    .loc>div:first-child {
         font-weight: 600;
         font-size: 16px;
         color: var(--text);
         margin-bottom: 8px;
     }
-    
+
     .loc strong {
         color: var(--accent);
         font-weight: 600;
     }
-    
-    .muted { 
+
+    .muted {
         color: var(--muted);
         font-size: 13px;
         margin: 4px 0;
     }
-    
+
     /* Loading state */
     .loading {
         position: relative;
         overflow: hidden;
     }
-    
+
     .loading::after {
         content: '';
         position: absolute;
@@ -265,23 +289,31 @@
         background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.1), transparent);
         animation: shimmer 1.5s infinite;
     }
-    
+
     @keyframes shimmer {
-        0% { left: -100%; }
-        100% { left: 100%; }
+        0% {
+            left: -100%;
+        }
+
+        100% {
+            left: 100%;
+        }
     }
-    
+
     /* Smooth transitions for all interactive elements */
     * {
         transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
     }
+
     /* NEW STYLES for recommendations and LIME */
     .details-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
         gap: 24px;
     }
-    .recommendations ul, .lime-explanation ul {
+
+    .recommendations ul,
+    .lime-explanation ul {
         list-style: none;
         padding: 0;
         margin: 0;
@@ -289,6 +321,7 @@
         flex-direction: column;
         gap: 12px;
     }
+
     .recommendations li {
         background: var(--surface);
         padding: 12px 16px;
@@ -296,6 +329,7 @@
         border: 1px solid var(--card-border);
         font-size: 15px;
     }
+
     .lime-explanation li {
         font-family: 'Courier New', Courier, monospace;
         background: var(--surface);
@@ -311,9 +345,11 @@
 {% block content %}
 
 </head>
+
 <body>
     <header>
         <h1>🌍 AQI Dashboard — Current & 72h Forecast</h1>
+        <div class="last-updated"><i class="fas fa-clock"></i> Updated: {{ air_updated_time }}</div>
     </header>
 
     <div class="container">
@@ -336,7 +372,8 @@
                 <label class="muted">Location:</label>
                 <select id="locationSelect">
                     {% for p in locations %}
-                        <option value="{{ p.id }}" {% if p.full_name == default_location_name %}selected{% endif %}>{{ p.full_name }}</option>
+                    <option value="{{ p.id }}" {% if p.full_name==default_location_name %}selected{% endif %}>{{
+                        p.full_name }}</option>
                     {% endfor %}
                 </select>
             </div>
@@ -349,163 +386,181 @@
             <div class="card recommendations">
                 <div class="section-title">Health Recommendations</div>
                 <div id="recommendations-content">
-                   {% if initial_details and initial_details.recommendations.general %}
-    
-    <h4>{{ initial_details.recommendations.general.title }}</h4>
-    <p>{{ initial_details.recommendations.general.advice }}</p>
-    
-    {% if initial_details.recommendations.smart %}
-        <h5>Key Factors:</h5>
-        <ul>
-            {% for item in initial_details.recommendations.smart %}
-                <li>{{ item|safe }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
-
-    {% if initial_details.recommendations.contextual %}
-         <h5>Context:</h5>
-        <ul>
-            {% for item in initial_details.recommendations.contextual %}
-                <li>{{ item|safe }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
-
-{% else %}
-    <p class="muted">No recommendations available.</p>
-{% endif %}
+                    <p class="muted">Generating ML health recommendations in background...</p>
                 </div>
             </div>
             <div class="card lime-explanation">
                 <div class="section-title">LIME: Why this prediction?</div>
                 <div id="lime-content">
-                    {% if initial_details and initial_details.lime_explanation %}
-                        <ul>
-                            {% for rule in initial_details.lime_explanation %}
-                                <li>{{ rule[0] }}</li>
-                            {% endfor %}
-                        </ul>
-                    {% else %}
-                        <p class="muted">No LIME explanation available.</p>
-                    {% endif %}
+                    <p class="muted">Computing artificial LIME permutations in background...</p>
                 </div>
             </div>
         </div>
-  <div class="card">
+        <div class="card">
             <div class="section-title">Current AQI (Now)</div>
             <div class="locations">
                 {% for p in locations %}
-                    <div class="loc">
-                        <div><strong>{{ p.full_name }}</strong></div>
-                        <div class="muted">Lat: {{ "%.6f"|format(p.lat) }}, Lon: {{ "%.6f"|format(p.lon) }}</div>
-                        <div>Now: <strong>{{ p.aqi_now }}</strong></div>
-                        <div class="muted">3h→72h: {{ p.forecast }}</div>
-                    </div>
+                <div class="loc">
+                    <div><strong>{{ p.full_name }}</strong></div>
+                    <div class="muted">Lat: {{ "%.6f"|format(p.lat) }}, Lon: {{ "%.6f"|format(p.lon) }}</div>
+                    <div>Now: <strong>AQI {{ p.aqi_500_scale }}</strong> <span class="muted">(Class {{ p.aqi_now
+                            }}/5)</span></div>
+                    <div class="muted">3h→72h: {{ p.forecast }}</div>
+                </div>
                 {% endfor %}
             </div>
         </div>
     </div>
-{% endblock %}
+    {% endblock %}
 
-{% block page_specific_js %}
-<script src="https://cdn.jsdelivr.net/npm/luxon@3.4.4/build/global/luxon.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1.3.1/dist/chartjs-adapter-luxon.umd.min.js"></script>
+    {% block page_specific_js %}
+    <script src="https://cdn.jsdelivr.net/npm/luxon@3.4.4/build/global/luxon.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    <script
+        src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1.3.1/dist/chartjs-adapter-luxon.umd.min.js"></script>
 
-<script>
-    const initialSeries = JSON.parse('{{ chart_series|safe }}');
-    let myChart;
+    <script>
+        const initialSeries = JSON.parse('{{ chart_series|safe }}');
+        const INITIAL_DETAILS = {{ initial_details| tojson }};
+        const LOCATIONS_DATA = {{ locations| tojson }};
+        let myChart;
 
-    function drawChart(series, title) {
-        series.sort((a, b) => new Date(a.ts) - new Date(b.ts));
-        const x_labels = series.map(d => d.ts); const y_data = series.map(d => d.aqi);
-        if (myChart) { myChart.destroy(); }
-        const ctx = document.getElementById('chart');
-        myChart = new Chart(ctx, {
-            type: 'line', data: { labels: x_labels, datasets: [{ label: 'AQI Class', data: y_data, borderColor: '#38bdf8', backgroundColor: 'rgba(56, 189, 248, 0.1)', pointStyle: 'circle', pointRadius: 6, pointHoverRadius: 10, pointBackgroundColor: '#38bdf8', pointBorderColor: '#ffffff', pointBorderWidth: 2, tension: 0.4, fill: true, borderWidth: 3 }] },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, title: { display: true, text: title, color: '#f8fafc', font: { size: 16, weight: '600' }, padding: 20 } }, scales: { y: { title: { display: true, text: 'AQI Class (1-5)', color: '#cbd5e1', font: { size: 14, weight: '500' } }, min: 0.8, max: 5.2, ticks: { stepSize: 1, color: '#94a3b8', font: { size: 12 } }, grid: { color: 'rgba(55, 65, 81, 0.3)', drawBorder: false } }, x: { type: 'time', time: { unit: 'hour', tooltipFormat: 'dd MMM, HH:mm', displayFormats: { hour: 'EEE, HH:mm' } }, title: { display: true, text: 'Time (next 72h)', color: '#cbd5e1', font: { size: 14, weight: '500' } }, ticks: { color: '#94a3b8', font: { size: 12 } }, grid: { color: 'rgba(55, 65, 81, 0.3)', drawBorder: false } } }, interaction: { intersect: false, mode: 'index' } }
+        function drawChart(series, title) {
+            series.sort((a, b) => new Date(a.ts) - new Date(b.ts));
+            const x_labels = series.map(d => d.ts); const y_data = series.map(d => d.aqi);
+            if (myChart) { myChart.destroy(); }
+            const ctx = document.getElementById('chart');
+            myChart = new Chart(ctx, {
+                type: 'line', data: { labels: x_labels, datasets: [{ label: 'AQI Class', data: y_data, borderColor: '#38bdf8', backgroundColor: 'rgba(56, 189, 248, 0.1)', pointStyle: 'circle', pointRadius: 6, pointHoverRadius: 10, pointBackgroundColor: '#38bdf8', pointBorderColor: '#ffffff', pointBorderWidth: 2, tension: 0.4, fill: true, borderWidth: 3 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, title: { display: true, text: title, color: '#f8fafc', font: { size: 16, weight: '600' }, padding: 20 } }, scales: { y: { title: { display: true, text: 'AQI Class (1-5)', color: '#cbd5e1', font: { size: 14, weight: '500' } }, min: 0.8, max: 5.2, ticks: { stepSize: 1, color: '#94a3b8', font: { size: 12 } }, grid: { color: 'rgba(55, 65, 81, 0.3)', drawBorder: false } }, x: { type: 'time', time: { unit: 'hour', tooltipFormat: 'dd MMM, HH:mm', displayFormats: { hour: 'EEE, HH:mm' } }, title: { display: true, text: 'Time (next 72h)', color: '#cbd5e1', font: { size: 14, weight: '500' } }, ticks: { color: '#94a3b8', font: { size: 12 } }, grid: { color: 'rgba(55, 65, 81, 0.3)', drawBorder: false } } }, interaction: { intersect: false, mode: 'index' } }
+            });
+        }
+
+        drawChart(initialSeries, "Forecast — {{ default_location_name }}");
+
+        // Functions to update the new UI sections
+        function updateRecommendations(data) {
+            const container = document.getElementById('recommendations-content');
+            if (data && data.recommendations && data.recommendations.general) {
+                let html = `<h4>${data.recommendations.general.title}</h4><p>${data.recommendations.general.advice}</p>`;
+                if (data.recommendations.smart && data.recommendations.smart.length > 0) {
+                    html += `<h5>Key Factors:</h5><ul>${data.recommendations.smart.map(item => `<li>${item}</li>`).join('')}</ul>`;
+                }
+                if (data.recommendations.contextual && data.recommendations.contextual.length > 0) {
+                    html += `<h5>Context:</h5><ul>${data.recommendations.contextual.map(item => `<li>${item}</li>`).join('')}</ul>`;
+                }
+                container.innerHTML = html;
+            } else {
+                container.innerHTML = '<p class="muted">No recommendations available.</p>';
+            }
+        }
+
+        function updateLimeExplanation(data) {
+            const container = document.getElementById('lime-content');
+            container.innerHTML = ''; // Clear previous content
+            if (data.lime_explanation && data.lime_explanation.length > 0) {
+                const ul = document.createElement('ul');
+                data.lime_explanation.forEach(rule => {
+                    const li = document.createElement('li');
+                    li.textContent = rule[0]; // LIME rules are nested in lists
+                    ul.appendChild(li);
+                });
+                container.appendChild(ul);
+            } else {
+                container.innerHTML = '<p class="muted">No LIME explanation available.</p>';
+            }
+        }
+        async function fetchLocationDetails(id) {
+            const recsContainer = document.querySelector('.recommendations');
+            const limeContainer = document.querySelector('.lime-explanation');
+
+            recsContainer.classList.add('loading');
+            limeContainer.classList.add('loading');
+
+            try {
+                const res = await fetch(`/api/location_details?id=${encodeURIComponent(id)}`);
+                if (!res.ok) throw new Error(`Details fetch failed: ${res.status}`);
+                const data = await res.json();
+                if (data.ok) {
+                    updateRecommendations(data);
+                    updateLimeExplanation(data);
+                } else { console.error("API Error:", data.error); }
+            } catch (err) { console.error("Network or fetch error:", err); }
+            finally {
+                recsContainer.classList.remove('loading');
+                limeContainer.classList.remove('loading');
+            }
+        }
+
+        // Add skeleton loading overlay here if desired...
+        // Add event listener to handle updates for all sections
+        document.getElementById("locationSelect").addEventListener("change", async (e) => {
+            const id = e.target.value;
+            const chartContainer = document.querySelector('.chart-container');
+
+            // Show loading state on chart card
+            chartContainer.classList.add('loading');
+
+            // Highlight map pin
+            const selectedData = LOCATIONS_DATA.find(loc => loc.id == id);
+            if (selectedData) {
+                const mapIframe = document.querySelector('.map-wrap iframe');
+                if (mapIframe && mapIframe.contentWindow) {
+                    mapIframe.contentWindow.postMessage({ lat: selectedData.lat, lon: selectedData.lon }, '*');
+                }
+            }
+
+            // --- 1. Fetch data for the chart ---
+            try {
+                const res = await fetch(`/api/forecast_series?id=${encodeURIComponent(id)}`);
+                if (!res.ok) throw new Error(`Chart fetch failed: ${res.status}`);
+                const data = await res.json();
+                if (data.ok) {
+                    drawChart(data.series, `Forecast — ${data.name}`);
+                } else { console.error("API Error:", data.error); }
+            } catch (err) { console.error("Network or fetch error:", err); }
+            finally { chartContainer.classList.remove('loading'); }
+
+            // --- 2. Fetch ML Details in parallel ---
+            fetchLocationDetails(id);
         });
-    }
-    
-    drawChart(initialSeries, "Forecast — {{ default_location_name }}");
 
-    // Functions to update the new UI sections
-    function updateRecommendations(data) {
-        const container = document.getElementById('recommendations-content');
-        container.innerHTML = ''; // Clear previous content
-        if (data.recommendations) {
-            const ul = document.createElement('ul');
-            data.recommendations.general.forEach(item => {
-                const li = document.createElement('li');
-                li.textContent = item;
-                ul.appendChild(li);
-            });
-            data.recommendations.smart.forEach(item => {
-                const li = document.createElement('li');
-                li.textContent = item;
-                ul.appendChild(li);
-            });
-            container.appendChild(ul);
-        } else {
-            container.innerHTML = '<p class="muted">No recommendations available.</p>';
-        }
-    }
-    
-    function updateLimeExplanation(data) {
-        const container = document.getElementById('lime-content');
-        container.innerHTML = ''; // Clear previous content
-        if (data.lime_explanation && data.lime_explanation.length > 0) {
-            const ul = document.createElement('ul');
-            data.lime_explanation.forEach(rule => {
-                const li = document.createElement('li');
-                li.textContent = rule[0]; // LIME rules are nested in lists
-                ul.appendChild(li);
-            });
-            container.appendChild(ul);
-        } else {
-            container.innerHTML = '<p class="muted">No LIME explanation available.</p>';
-        }
-    }
+        window.addEventListener('message', (e) => {
+            if (e.data && e.data.type === 'marker_click') {
+                const selectEl = document.getElementById('locationSelect');
+                if (selectEl && selectEl.value !== String(e.data.id)) {
+                    selectEl.value = e.data.id;
+                    selectEl.dispatchEvent(new Event('change'));
+                }
+            }
+        });
 
-    // Add event listener to handle updates for all sections
-    document.getElementById("locationSelect").addEventListener("change", async (e) => {
-        const id = e.target.value;
-        const chartContainer = document.querySelector('.chart-container');
-        const recsContainer = document.querySelector('.recommendations');
-        const limeContainer = document.querySelector('.lime-explanation');
-        
-        // Show loading state on all cards that will be updated
-        chartContainer.classList.add('loading');
-        recsContainer.classList.add('loading');
-        limeContainer.classList.add('loading');
-        
-        // --- 1. Fetch data for the chart ---
-        try {
-            const res = await fetch(`/api/forecast_series?id=${encodeURIComponent(id)}`);
-            if (!res.ok) throw new Error(`Chart fetch failed: ${res.status}`);
-            const data = await res.json();
-            if (data.ok) {
-                drawChart(data.series, `Forecast — ${data.name}`);
-            } else { console.error("API Error:", data.error); }
-        } catch (err) { console.error("Network or fetch error:", err); } 
-        finally { chartContainer.classList.remove('loading'); }
+        // On Dashboard load, render the pre-fetched SHAP/LIME logic immediately!
+        document.addEventListener("DOMContentLoaded", () => {
+            if (INITIAL_DETAILS && INITIAL_DETAILS.recommendations) {
+                // Already fetched by the backend! Don't wait, render instantly.
+                updateRecommendations(INITIAL_DETAILS);
+                updateLimeExplanation(INITIAL_DETAILS);
+            } else {
+                const defaultId = document.getElementById("locationSelect").value;
+                if (defaultId) fetchLocationDetails(defaultId);
+            }
 
-        // --- 2. Fetch data for the details (LIME, Recommendations) ---
-        try {
-            const res = await fetch(`/api/location_details?id=${encodeURIComponent(id)}`);
-            if (!res.ok) throw new Error(`Details fetch failed: ${res.status}`);
-            const data = await res.json();
-            if (data.ok) {
-                updateRecommendations(data);
-                updateLimeExplanation(data);
-            } else { console.error("API Error:", data.error); }
-        } catch (err) { console.error("Network or fetch error:", err); }
-        finally { 
-            recsContainer.classList.remove('loading');
-            limeContainer.classList.remove('loading');
-        }
-    });
-</script>
+            // Highlight map pin on initial load
+            const defaultId = document.getElementById("locationSelect").value;
+            const defaultData = LOCATIONS_DATA.find(loc => loc.id == defaultId);
+            if (defaultData) {
+                const mapIframe = document.querySelector('.map-wrap iframe');
+                if (mapIframe) {
+                    mapIframe.addEventListener('load', () => {
+                        mapIframe.contentWindow.postMessage({ lat: defaultData.lat, lon: defaultData.lon }, '*');
+                    });
+                    if (mapIframe.contentWindow) {
+                        mapIframe.contentWindow.postMessage({ lat: defaultData.lat, lon: defaultData.lon }, '*');
+                    }
+                }
+            }
+        });
+    </script>
 
-{% endblock %}
+    {% endblock %}

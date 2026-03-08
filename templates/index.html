@@ -6,15 +6,41 @@
 
 <style>
     :root {
-        --bg: #0f172a; --card: #111827; --text: #e5e7eb; --muted: #9ca3af; --accent: #38bdf8;
-        --air-color: #2ecc71; --water-color: #3498db;
+        --bg: #0f172a;
+        --card: #111827;
+        --text: #e5e7eb;
+        --muted: #9ca3af;
+        --accent: #38bdf8;
+        --air-color: #2ecc71;
+        --water-color: #3498db;
     }
-    * { box-sizing: border-box; }
-    body { margin: 0; background: var(--bg); color: var(--text);
-        font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }
-    header { padding: 18px 20px; border-bottom: 1px solid #1f2937; display: flex; align-items: center; gap: 12px; }
-    header h1 { margin: 0; font-size: 22px; letter-spacing: .2px; }
-    .container { 
+
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    header {
+        padding: 18px 20px;
+        border-bottom: 1px solid #1f2937;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    header h1 {
+        margin: 0;
+        font-size: 22px;
+        letter-spacing: .2px;
+    }
+
+    .container {
         padding: 2rem;
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -22,15 +48,17 @@
         max-width: 1280px;
         margin: 0 auto;
     }
-    .card { 
+
+    .card {
         background: var(--card);
         border: 1px solid #1f2937;
         border-radius: 16px;
-        box-shadow: 0 8px 24px rgba(0,0,0,.25);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, .25);
         display: flex;
         flex-direction: column;
         overflow: hidden;
     }
+
     .card-header {
         padding: 1.5rem;
         border-bottom: 1px solid #1f2937;
@@ -38,10 +66,12 @@
         align-items: center;
         gap: 1rem;
     }
+
     .card-header h2 {
         margin: 0;
         font-size: 1.5rem;
     }
+
     .card-content {
         padding: 1.5rem;
         display: flex;
@@ -49,21 +79,49 @@
         flex: 1;
         gap: 1rem;
     }
+
     .summary-block {
-        padding: 1rem;
+        padding: 0.85rem;
         background: #111827;
         border-radius: 8px;
         border: 1px solid #243045;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
     }
+
     .summary-block .label {
-        font-size: 0.8rem;
+        font-size: 0.75rem;
+        line-height: 1.2;
         color: var(--muted);
-        margin-bottom: 0.2rem;
+        margin-bottom: 0.4rem;
     }
+
     .summary-block .value {
-        font-size: 1.25rem;
+        font-size: 1.15rem;
         font-weight: 600;
+        color: var(--text);
     }
+
+    .last-updated {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--muted);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        margin-left: auto;
+    }
+
+    .last-updated i {
+        font-size: 0.7rem;
+        color: var(--accent);
+    }
+
     .aqi-color {
         display: inline-block;
         width: 1rem;
@@ -71,6 +129,7 @@
         border-radius: 50%;
         margin-right: 0.5rem;
     }
+
     .button-link {
         display: inline-block;
         background-color: var(--accent);
@@ -82,42 +141,62 @@
         font-weight: 600;
         margin-top: auto;
     }
+
     .map-wrapper {
         height: 350px;
         width: 100%;
         border-bottom: 1px solid #1f2937;
     }
+
     .map-wrapper iframe {
         border: none;
         width: 100%;
         height: 100%;
     }
+
     .aqi-status {
         font-size: 1.5rem;
         font-weight: 700;
     }
+
     .pollutant-list {
-        display: flex;
-        /* flex-wrap: wrap; */
-        flex-wrap: nowrap;
-        overflow-x: auto;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.75rem;
         padding-bottom: 10px;
-        gap: 1rem;
     }
-    select { 
-        background: #0b1220; 
-        color: var(--text); 
-        border: 1px solid #243045; 
-        border-radius: 10px; 
-        padding: 8px 10px; 
-        font-size: 14px; 
+
+    select {
+        background: #1e293b;
+        color: var(--text);
+        border: 1px solid #334155;
+        border-radius: 8px;
+        padding: 10px 14px;
+        padding-right: 36px;
+        font-size: 14px;
         cursor: pointer;
-        width: auto;
-        max-width: 100%;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        overflow: hidden;
+        width: 100%;
+        max-width: 400px;
+        outline: none;
+        appearance: none;
+        background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2214%22%20height%3D%228%22%20viewBox%3D%220%200%2014%208%22%20fill%3D%22none%22%3E%3Cpath%20d%3D%22M1%201L7%207L13%201%22%20stroke%3D%22%239CA3AF%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E");
+        background-repeat: no-repeat;
+        background-position: right 14px center;
+        background-size: 12px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: all 0.2s ease;
     }
+
+    select:hover {
+        border-color: #475569;
+        background-color: #0f172a;
+    }
+
+    select:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+    }
+
     .controls {
         padding: 0 1.5rem;
         margin-top: 1rem;
@@ -125,19 +204,49 @@
         align-items: center;
         gap: 10px;
     }
+
     .air-card {
         border-top: 4px solid var(--air-color);
     }
+
     .water-card {
         border-top: 4px solid var(--water-color);
     }
 
-    .form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
-    .form-group { display: flex; flex-direction: column; gap: 0.5rem; }
-    .form-group label { color: var(--muted); font-size: 0.8rem; }
-    .form-group input, .form-group select { width: 100%; background: #0b1220; color: var(--text); border: 1px solid #243045; border-radius: 8px; padding: 8px 10px; font-size: 14px; }
-    .result-area { margin-top: 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+    }
 
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .form-group label {
+        color: var(--muted);
+        font-size: 0.8rem;
+    }
+
+    .form-group input,
+    .form-group select {
+        width: 100%;
+        background: #0b1220;
+        color: var(--text);
+        border: 1px solid #243045;
+        border-radius: 8px;
+        padding: 8px 10px;
+        font-size: 14px;
+    }
+
+    .result-area {
+        margin-top: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
 </style>
 
 {% endblock %}
@@ -152,6 +261,7 @@
     <div class="card air-card">
         <div class="card-header">
             <h2>Air Quality</h2>
+            <div class="last-updated"><i class="fas fa-clock"></i> Updated: {{ air_updated_time }}</div>
         </div>
         <div class="map-wrapper">
             {{ air_map_html|safe }}
@@ -166,7 +276,7 @@
                 <span id="air-location-name" class="aqi-status"></span>
             </div>
             <div id="air-pollutants" class="pollutant-list"></div>
-            
+
             <div>
                 <div class="section-title">Key Factors Influencing AQI Prediction</div>
                 <div class="chart-container">
@@ -181,6 +291,7 @@
     <div class="card water-card">
         <div class="card-header">
             <h2>Water Quality</h2>
+            <div class="last-updated"><i class="fas fa-clock"></i> Updated: {{ water_updated_time }}</div>
         </div>
         <div class="map-wrapper">
             {{ water_map_html|safe }}
@@ -196,353 +307,423 @@
             </div>
             <div id="water-parameters" class="pollutant-list"></div>
 
-        <form id="wqi-form">
-            <p class="data-note" style="border:none; text-align:left; padding:0 0 1rem 0;">
-                Representative values are shown below. You can edit them to get a new prediction.
-            </p>
-            <div class="form-grid" title="These are representative values. You can change them and predict.">
-                <div class="form-group"><label>pH</label><input type="number" step="any" id="ph" required></div>
-                <div class="form-group"><label>Dissolved O₂ (mg/L)</label><input type="number" step="any" id="dissolvedoxygen" required></div>
-                <div class="form-group"><label>BOD (mg/L)</label><input type="number" step="any" id="bod" required></div>
-                <div class="form-group"><label>COD (mg/L)</label><input type="number" step="any" id="cod" required></div>
-                <div class="form-group"><label>Nitrate (mg/L)</label><input type="number" step="any" id="nitrate" required></div>
-                <div class="form-group"><label>Fecal Coliform (MPN/100 ml)</label><input type="number" step="1" id="fecalcoliform" required></div>
-            </div>
-            <button type="submit" class="button-link" style="margin-top: 1.5rem;">Predict WQI for these values</button>
-        </form>
-
-        <div id="wqi-result" class="result-area">
-            <h3 style="color: var(--muted); font-size: 1rem; text-align: center; border-bottom: 1px solid #243045; padding-bottom: 0.5rem; margin-bottom: 1rem;">Prediction Result</h3>
-            <div class="summary-block">
-                <div class="label">Predicted WQI Score</div>
-                <div id="result-wqi-score" class="value">--</div>
-            </div>
-            <div class="summary-block">
-                <div class="label">Classification</div>
-                <div id="result-classification" class="value">--</div>
-            </div>
-
-            <div>
-                <div class="section-title">Key Factors Influencing WQI Prediction</div>
-                <div class="chart-container">
-                    <canvas id="wqiShapChart"></canvas>
+            <form id="wqi-form">
+                <p class="data-note" style="border:none; text-align:left; padding:0 0 1rem 0;">
+                    Representative values are shown below. You can edit them to get a new prediction.
+                </p>
+                <div class="form-grid" title="These are representative values. You can change them and predict.">
+                    <div class="form-group"><label>pH</label><input type="number" step="any" id="ph" required></div>
+                    <div class="form-group"><label>Dissolved O₂ (mg/L)</label><input type="number" step="any"
+                            id="dissolvedoxygen" required></div>
+                    <div class="form-group"><label>BOD (mg/L)</label><input type="number" step="any" id="bod" required>
+                    </div>
+                    <div class="form-group"><label>COD (mg/L)</label><input type="number" step="any" id="cod" required>
+                    </div>
+                    <div class="form-group"><label>Nitrate (mg/L)</label><input type="number" step="any" id="nitrate"
+                            required></div>
+                    <div class="form-group"><label>Fecal Coliform (MPN/100 ml)</label><input type="number" step="1"
+                            id="fecalcoliform" required></div>
                 </div>
-            </div>
+                <button type="submit" class="button-link" style="margin-top: 1.5rem;">Predict WQI for these
+                    values</button>
+            </form>
 
-            <a href="/water_dashboard" class="button-link">View Water Dashboard</a>
+            <div id="wqi-result" class="result-area">
+                <h3
+                    style="color: var(--muted); font-size: 1rem; text-align: center; border-bottom: 1px solid #243045; padding-bottom: 0.5rem; margin-bottom: 1rem;">
+                    Prediction Result</h3>
+                <div class="summary-block">
+                    <div class="label">Predicted WQI Score</div>
+                    <div id="result-wqi-score" class="value">--</div>
+                </div>
+                <div class="summary-block">
+                    <div class="label">Classification</div>
+                    <div id="result-classification" class="value">--</div>
+                </div>
+
+                <div>
+                    <div class="section-title">Key Factors Influencing WQI Prediction</div>
+                    <div class="chart-container">
+                        <canvas id="wqiShapChart"></canvas>
+                    </div>
+                </div>
+
+                <a href="/water_dashboard" class="button-link">View Water Dashboard</a>
+            </div>
         </div>
     </div>
-</div>
 
-<script>
-    const AIR_LOCATIONS_DATA = {{ air_locations_data|tojson }} || [];
-    const INITIAL_AIR_DATA = {{ initial_air_data|tojson }} || null;
-    const WATER_LOCATIONS_DATA = {{ water_locations_data|tojson }} || [];
-    const INITIAL_WATER_DATA = {{ initial_water_data|tojson }} || null;
+    <script>
+        const AIR_LOCATIONS_DATA = {{ air_locations_data| tojson }} || [];
+        const INITIAL_AIR_DATA = {{ initial_air_data| tojson }} || null;
+        const WATER_LOCATIONS_DATA = {{ water_locations_data| tojson }} || [];
+        const INITIAL_WATER_DATA = {{ initial_water_data| tojson }} || null;
 
-    let shapChart;
-    let wqiShapChart;
+        let shapChart;
+        let wqiShapChart;
 
-    function aqiColor(aqiClass) {
-        const colors = {
-            1: "#00B050", 2: "#92D050", 3: "#FFFF00",
-            4: "#FF9900", 5: "#FF0000"
-        };
-        return colors[aqiClass] || "#7f8c8d";
-    }
-    function wqiColor(wqiValue) {
-        if (wqiValue >= 63) return "#2ecc71";
-        if (wqiValue >= 50) return "#f1c40f";
-        if (wqiValue >= 38) return "#e67e22";
-        return "#e74c3c";
-    }
-
-    function drawShapChart(explanationData) {
-        const ctx = document.getElementById('shapChart');
-        if (!ctx || !explanationData) return;
-
-        if (shapChart) {
-            shapChart.destroy();
+        function aqiColor(aqiClass) {
+            const colors = {
+                1: "#00B050", 2: "#92D050", 3: "#FFFF00",
+                4: "#FF9900", 5: "#FF0000"
+            };
+            return colors[aqiClass] || "#7f8c8d";
         }
-        
-        explanationData.reverse();
+        function wqiColor(wqiValue) {
+            if (wqiValue >= 63) return "#2ecc71";
+            if (wqiValue >= 50) return "#f1c40f";
+            if (wqiValue >= 38) return "#e67e22";
+            return "#e74c3c";
+        }
 
-        const labels = explanationData.map(item => item.feature.replace('_', ' ').toUpperCase());
-        const data = explanationData.map(item => item.impact);
-        
-        // Using brighter colors for the bars
-        const backgroundColors = data.map(impact => impact > 0 ? '#FF6B6B' : '#4DDB6A');
+        function drawShapChart(explanationData) {
+            const ctx = document.getElementById('shapChart');
+            if (!ctx || !explanationData) return;
 
-        shapChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Impact on AQI Prediction',
-                    data: data,
-                    backgroundColor: backgroundColors,
-                    borderColor: '#374151',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                indexAxis: 'y',
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                let label = context.dataset.label || '';
-                                if (label) { label += ': '; }
-                                if (context.parsed.x !== null) {
+            if (shapChart) {
+                shapChart.destroy();
+            }
+
+            explanationData.reverse();
+
+            const labels = explanationData.map(item => item.feature.replace('_', ' ').toUpperCase());
+            const data = explanationData.map(item => item.impact);
+
+            // Using brighter colors for the bars
+            const backgroundColors = data.map(impact => impact > 0 ? '#FF6B6B' : '#4DDB6A');
+
+            shapChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Impact on AQI Prediction',
+                        data: data,
+                        backgroundColor: backgroundColors,
+                        borderColor: '#374151',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) { label += ': '; }
+                                    if (context.parsed.x !== null) {
+                                        const impact = context.parsed.x;
+                                        label += `${impact > 0 ? '+' : ''}${impact.toFixed(4)}`;
+                                        label += impact > 0 ? ' (Worse AQI)' : ' (Better AQI)';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    // =========================================================
+                    // THE FIX IS HERE
+                    // Using a bright color for all chart text.
+                    // =========================================================
+                    scales: {
+                        x: {
+                            title: { display: true, text: 'SHAP Value (Impact on Prediction)', color: '#e5e7eb' },
+                            ticks: { color: '#e5e7eb', font: { size: 10 } },
+                            grid: { color: 'rgba(55, 65, 81, 0.5)' }
+                        },
+                        y: {
+                            ticks: { color: '#e5e7eb', font: { size: 11 } },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+
+        function drawWqiShapChart(explanationData) {
+            const ctx = document.getElementById('wqiShapChart');
+            if (!ctx || !explanationData) return;
+
+            if (wqiShapChart) {
+                wqiShapChart.destroy();
+            }
+
+            explanationData.reverse();
+
+            const labels = explanationData.map(item => item.feature.replace('_', ' ').toUpperCase());
+            const data = explanationData.map(item => item.impact);
+            const backgroundColors = data.map(impact => impact > 0 ? '#4DDB6A' : '#FF6B6B'); // Reversed colors for WQI
+
+            wqiShapChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Impact on WQI Prediction',
+                        data: data,
+                        backgroundColor: backgroundColors
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    let label = 'Impact: ';
                                     const impact = context.parsed.x;
                                     label += `${impact > 0 ? '+' : ''}${impact.toFixed(4)}`;
-                                    label += impact > 0 ? ' (Worse AQI)' : ' (Better AQI)';
+                                    // --- CUSTOMIZED TOOLTIP FOR WQI ---
+                                    label += impact > 0 ? ' (Better WQI)' : ' (Worse WQI)';
+                                    return label;
                                 }
-                                return label;
                             }
                         }
-                    }
-                },
-                // =========================================================
-                // THE FIX IS HERE
-                // Using a bright color for all chart text.
-                // =========================================================
-                scales: {
-                    x: {
-                        title: { display: true, text: 'SHAP Value (Impact on Prediction)', color: '#e5e7eb' },
-                        ticks: { color: '#e5e7eb', font: { size: 10 } },
-                        grid: { color: 'rgba(55, 65, 81, 0.5)' }
                     },
-                    y: {
-                        ticks: { color: '#e5e7eb', font: { size: 11 } },
-                        grid: { display: false }
-                    }
-                }
-            }
-        });
-    }
-
-    function drawWqiShapChart(explanationData) {
-        const ctx = document.getElementById('wqiShapChart');
-        if (!ctx || !explanationData) return;
-
-        if (wqiShapChart) {
-            wqiShapChart.destroy();
-        }
-        
-        explanationData.reverse();
-
-        const labels = explanationData.map(item => item.feature.replace('_', ' ').toUpperCase());
-        const data = explanationData.map(item => item.impact);
-        const backgroundColors = data.map(impact => impact > 0 ? '#4DDB6A' : '#FF6B6B'); // Reversed colors for WQI
-
-        wqiShapChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Impact on WQI Prediction',
-                    data: data,
-                    backgroundColor: backgroundColors
-                }]
-            },
-            options: {
-                indexAxis: 'y',
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                let label = 'Impact: ';
-                                const impact = context.parsed.x;
-                                label += `${impact > 0 ? '+' : ''}${impact.toFixed(4)}`;
-                                // --- CUSTOMIZED TOOLTIP FOR WQI ---
-                                label += impact > 0 ? ' (Better WQI)' : ' (Worse WQI)';
-                                return label;
-                            }
+                    scales: {
+                        x: {
+                            title: { display: true, text: 'SHAP Value (Impact on Prediction)', color: '#e5e7eb' },
+                            ticks: { color: '#e5e7eb' }
+                        },
+                        y: {
+                            ticks: { color: '#e5e7eb' }
                         }
                     }
-                },
-                scales: {
-                    x: {
-                        title: { display: true, text: 'SHAP Value (Impact on Prediction)', color: '#e5e7eb' },
-                        ticks: { color: '#e5e7eb' }
-                    },
-                    y: {
-                        ticks: { color: '#e5e7eb' }
-                    }
                 }
-            }
-        });
-    }
-
-    function updateAirCard(data) {
-        const locationNameEl = document.getElementById('air-location-name');
-        const aqiColorDotEl = document.getElementById('aqi-color-dot');
-        const pollutantsEl = document.getElementById('air-pollutants');
-
-        if (!data) {
-            locationNameEl.textContent = 'No data available';
-            aqiColorDotEl.style.backgroundColor = '#7f8c8d';
-            pollutantsEl.innerHTML = '';
-            return;
-        }
-
-        locationNameEl.textContent = `${data.full_name} - AQI ${data.aqi_now}`;
-        aqiColorDotEl.style.backgroundColor = aqiColor(data.aqi_now);
-        
-        const pollutants = data.pollutants;
-
-        pollutantsEl.innerHTML = `
-            <div class="summary-block"><div class="label">PM2.5 (μg/m3)</div><div class="value">${pollutants?.pm2_5?.toFixed(2) ?? 'N/A'}</div></div>
-            <div class="summary-block"><div class="label">PM10 (μg/m3)</div><div class="value">${pollutants?.pm10?.toFixed(2) ?? 'N/A'}</div></div>
-            <div class="summary-block"><div class="label">O₃(Ozone)(μg/m3)</div><div class="value">${pollutants?.o3?.toFixed(2) ?? 'N/A'}</div></div>
-            <div class="summary-block"><div class="label">NO₂ (μg/m3)</div><div class="value">${pollutants?.no2?.toFixed(2) ?? 'N/A'}</div></div>
-            <div class="summary-block"><div class="label">SO₂ (μg/m3)</div><div class="value">${pollutants?.so2?.toFixed(2) ?? 'N/A'}</div></div>
-            <div class="summary-block"><div class="label">CO (μg/m3)</div><div class="value">${pollutants?.co?.toFixed(2) ?? 'N/A'}</div></div>
-        `;
-        
-        if (data.shap_explanation) {
-            drawShapChart(data.shap_explanation);
-        }
-    }
-    
-    function updateWaterCard(data) {
-        if (!data) return;
-
-        const locationName = data.full_name;
-        const wqiValue = data.wqi;
-        const wqiClassification = data.classification;
-        const params = data.parameters;
-
-        document.getElementById('location-name').textContent = `${locationName} - WQI ${wqiValue.toFixed(0)}`;
-        document.getElementById('wqi-color-dot').style.backgroundColor = wqiColor(wqiValue);
-
-        const paramsEl = document.getElementById('water-parameters');
-        paramsEl.innerHTML = `
-            <div class="summary-block"><div class="label">pH</div><div class="value">${params?.pH?.toFixed(2) ?? 'N/A'}</div></div>
-            <div class="summary-block"><div class="label">Dissolved O₂ (mg/L)</div><div class="value">${params?.dissolvedoxygen?.toFixed(2) ?? 'N/A'}</div></div>
-            <div class="summary-block"><div class="label">BOD (mg/L)</div><div class="value">${params?.bod?.toFixed(2) ?? 'N/A'}</div></div>
-            <div class="summary-block"><div class="label">COD (mg/L)</div><div class="value">${params?.cod?.toFixed(2) ?? 'N/A'}</div></div>
-            <div class="summary-block"><div class="label">Nitrate (mg/L)</div><div class="value">${params?.nitrate?.toFixed(2) ?? 'N/A'}</div></div>
-            <div class="summary-block"><div class="label">Fecal Coliform (MPN/100 ml)</div><div class="value">${params?.FecalColiform?.toFixed(0) ?? 'N/A'}</div></div>
-        `;
-
-        if (data.shap_explanation) {
-            drawWqiShapChart(data.shap_explanation);
-        }
-    }
-
-    function setupDropdown(selectId, locationsData, initialData, updateFn) {
-        const selectEl = document.getElementById(selectId);
-        if (!selectEl || !locationsData || !Array.isArray(locationsData)) return;
-
-        locationsData.forEach(loc => {
-            const option = document.createElement('option');
-            option.value = loc.id;
-            option.textContent = loc.full_name;
-            selectEl.appendChild(option);
-        });
-
-        if (initialData) {
-            selectEl.value = initialData.id;
-            updateFn(initialData);
-        }
-
-        selectEl.addEventListener('change', (e) => {
-            const selectedId = e.target.value;
-            const selectedData = locationsData.find(loc => loc.id == selectedId);
-            if (selectedData) {
-                updateFn(selectedData);
-            }
-        });
-    }
-
-    function updateWaterCardResult(result) {
-        if(result.ok) {
-            document.getElementById('result-wqi-score').textContent = result.wqi_score;
-            document.getElementById('result-classification').textContent = result.classification;
-        } else {
-            document.getElementById('result-wqi-score').textContent = "Error";
-            document.getElementById('result-classification').textContent = result.error || "Prediction failed.";
-        }
-    }
-
-    function populateWaterForm(locationData) {
-        if (!locationData || !locationData.parameters) return;
-        document.getElementById('ph').value = locationData.parameters.pH || '';
-        document.getElementById('dissolvedoxygen').value = locationData.parameters.dissolvedoxygen || '';
-        document.getElementById('bod').value = locationData.parameters.bod || '';
-        document.getElementById('cod').value = locationData.parameters.cod || '';
-        document.getElementById('nitrate').value = locationData.parameters.nitrate || '';
-        document.getElementById('fecalcoliform').value = locationData.parameters.FecalColiform || '';
-    }
-    
-    document.addEventListener('DOMContentLoaded', () => {
-        setupDropdown('locationSelect', AIR_LOCATIONS_DATA, INITIAL_AIR_DATA, updateAirCard);
-        const waterLocationSelect = document.getElementById('waterLocationSelect');
-        const wqiForm = document.getElementById('wqi-form');
-
-        // Populate water location dropdown
-        WATER_LOCATIONS_DATA.forEach(loc => {
-            const option = document.createElement('option');
-            option.value = loc.id;
-            option.textContent = loc.full_name;
-            waterLocationSelect.appendChild(option);
-        });
-
-        // Function to trigger a prediction
-        const predictWQI = async () => {
-            const data = {
-                location_id: waterLocationSelect.value,
-                month: new Date().getMonth() + 1,
-                ph: document.getElementById('ph').value,
-                dissolvedoxygen: document.getElementById('dissolvedoxygen').value,
-                bod: document.getElementById('bod').value,
-                cod: document.getElementById('cod').value,
-                nitrate: document.getElementById('nitrate').value,
-                fecalcoliform: document.getElementById('fecalcoliform').value
-            };
-            const response = await fetch('/api/predict_wqi', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(data)
             });
-            const result = await response.json();
-            updateWaterCardResult(result);
-        };
+        }
 
-        // Handle location changes
-        waterLocationSelect.addEventListener('change', () => {
-            const selectedId = waterLocationSelect.value;
-            const selectedData = WATER_LOCATIONS_DATA.find(loc => loc.id == selectedId);
-            if (selectedData) {
-                updateWaterCard(selectedData);
-                populateWaterForm(selectedData);
-                predictWQI(); // Predict automatically when location changes
+        function updateAirCard(data) {
+            const locationNameEl = document.getElementById('air-location-name');
+            const aqiColorDotEl = document.getElementById('aqi-color-dot');
+            const pollutantsEl = document.getElementById('air-pollutants');
+
+            if (!data) {
+                locationNameEl.textContent = 'No data available';
+                aqiColorDotEl.style.backgroundColor = '#7f8c8d';
+                pollutantsEl.innerHTML = '';
+                return;
+            }
+
+            locationNameEl.innerHTML = `${data.full_name} &nbsp;&mdash;&nbsp; <b>AQI ${data.aqi_500_scale}</b> <span style="font-size: 0.8rem; opacity: 0.7;">(Class ${data.aqi_now}/5)</span>`;
+            aqiColorDotEl.style.backgroundColor = aqiColor(data.aqi_now);
+
+            // Highlight map pin
+            const mapIframe = document.querySelector('.air-card .map-wrapper iframe');
+            if (mapIframe) {
+                mapIframe.addEventListener('load', () => {
+                    mapIframe.contentWindow.postMessage({ lat: data.lat, lon: data.lon }, '*');
+                });
+                if (mapIframe.contentWindow) {
+                    mapIframe.contentWindow.postMessage({ lat: data.lat, lon: data.lon }, '*');
+                }
+            }
+
+            const pollutants = data.pollutants;
+
+            pollutantsEl.innerHTML = `
+            <div class="summary-block"><div class="label">PM2.5 (μg/m³)</div><div class="value">${pollutants?.pm2_5?.toFixed(2) ?? 'N/A'}</div></div>
+            <div class="summary-block"><div class="label">PM10 (μg/m³)</div><div class="value">${pollutants?.pm10?.toFixed(2) ?? 'N/A'}</div></div>
+            <div class="summary-block"><div class="label">O₃ (Ozone) (μg/m³)</div><div class="value">${pollutants?.o3?.toFixed(2) ?? 'N/A'}</div></div>
+            <div class="summary-block"><div class="label">NO₂ (μg/m³)</div><div class="value">${pollutants?.no2?.toFixed(2) ?? 'N/A'}</div></div>
+            <div class="summary-block"><div class="label">SO₂ (μg/m³)</div><div class="value">${pollutants?.so2?.toFixed(2) ?? 'N/A'}</div></div>
+            <div class="summary-block"><div class="label">CO (μg/m³)</div><div class="value">${pollutants?.co?.toFixed(2) ?? 'N/A'}</div></div>
+        `;
+            if (shapChart) { shapChart.destroy(); shapChart = null; }
+
+            if (data.shap_explanation) {
+                drawShapChart(data.shap_explanation);
+            } else {
+                fetch(`/api/location_details?id=${encodeURIComponent(data.id)}`)
+                    .then(res => res.json())
+                    .then(details => {
+                        if (details.ok && details.shap_explanation) {
+                            drawShapChart(details.shap_explanation);
+                        }
+                    })
+                    .catch(err => console.error("Error fetching air SHAP details:", err));
+            }
+        }
+
+        function updateWaterCard(data) {
+            if (!data) return;
+
+            const locationName = data.full_name;
+            const wqiValue = data.wqi;
+            const wqiClassification = data.classification;
+            const params = data.parameters;
+
+            document.getElementById('location-name').textContent = `${locationName} - WQI ${wqiValue.toFixed(0)}`;
+            document.getElementById('wqi-color-dot').style.backgroundColor = wqiColor(wqiValue);
+
+            // Highlight map pin
+            const mapIframe = document.querySelector('.water-card .map-wrapper iframe');
+            if (mapIframe) {
+                mapIframe.addEventListener('load', () => {
+                    mapIframe.contentWindow.postMessage({ lat: data.lat, lon: data.lon }, '*');
+                });
+                if (mapIframe.contentWindow) {
+                    mapIframe.contentWindow.postMessage({ lat: data.lat, lon: data.lon }, '*');
+                }
+            }
+
+            const paramsEl = document.getElementById('water-parameters');
+            paramsEl.innerHTML = `
+            <div class="summary-block"><div class="label">pH</div><div class="value">${params?.pH?.toFixed(2) ?? 'N/A'}</div></div>
+            <div class="summary-block"><div class="label">Dissolved O₂<br>(mg/L)</div><div class="value">${params?.dissolvedoxygen?.toFixed(2) ?? 'N/A'}</div></div>
+            <div class="summary-block"><div class="label">BOD<br>(mg/L)</div><div class="value">${params?.bod?.toFixed(2) ?? 'N/A'}</div></div>
+            <div class="summary-block"><div class="label">COD<br>(mg/L)</div><div class="value">${params?.cod?.toFixed(2) ?? 'N/A'}</div></div>
+            <div class="summary-block"><div class="label">Nitrate<br>(mg/L)</div><div class="value">${params?.nitrate?.toFixed(2) ?? 'N/A'}</div></div>
+            <div class="summary-block"><div class="label">Fecal Coliform<br>(MPN/100 ml)</div><div class="value">${params?.FecalColiform?.toFixed(0) ?? 'N/A'}</div></div>
+        `;
+            if (wqiShapChart) { wqiShapChart.destroy(); wqiShapChart = null; }
+
+            if (data.shap_explanation) {
+                drawWqiShapChart(data.shap_explanation);
+            } else {
+                fetch(`/api/wqi_location_details?id=${encodeURIComponent(data.id)}`)
+                    .then(res => res.json())
+                    .then(details => {
+                        if (details.ok && details.shap_explanation) {
+                            drawWqiShapChart(details.shap_explanation);
+                        }
+                    })
+                    .catch(err => console.error("Error fetching water SHAP details:", err));
+            }
+        }
+
+        function setupDropdown(selectId, locationsData, initialData, updateFn) {
+            const selectEl = document.getElementById(selectId);
+            if (!selectEl || !locationsData || !Array.isArray(locationsData)) return;
+
+            locationsData.forEach(loc => {
+                const option = document.createElement('option');
+                option.value = loc.id;
+                option.textContent = loc.full_name;
+                selectEl.appendChild(option);
+            });
+
+            if (initialData) {
+                selectEl.value = initialData.id;
+                updateFn(initialData);
+            }
+
+            selectEl.addEventListener('change', (e) => {
+                const selectedId = e.target.value;
+                const selectedData = locationsData.find(loc => loc.id == selectedId);
+                if (selectedData) {
+                    updateFn(selectedData);
+                }
+            });
+        }
+
+        function updateWaterCardResult(result) {
+            if (result.ok) {
+                document.getElementById('result-wqi-score').textContent = result.wqi_score;
+                document.getElementById('result-classification').textContent = result.classification;
+            } else {
+                document.getElementById('result-wqi-score').textContent = "Error";
+                document.getElementById('result-classification').textContent = result.error || "Prediction failed.";
+            }
+        }
+
+        function populateWaterForm(locationData) {
+            if (!locationData || !locationData.parameters) return;
+            document.getElementById('ph').value = locationData.parameters.pH || '';
+            document.getElementById('dissolvedoxygen').value = locationData.parameters.dissolvedoxygen || '';
+            document.getElementById('bod').value = locationData.parameters.bod || '';
+            document.getElementById('cod').value = locationData.parameters.cod || '';
+            document.getElementById('nitrate').value = locationData.parameters.nitrate || '';
+            document.getElementById('fecalcoliform').value = locationData.parameters.FecalColiform || '';
+        }
+
+        window.addEventListener('message', (e) => {
+            if (e.data && e.data.type === 'marker_click') {
+                const airIframe = document.querySelector('.air-card .map-wrapper iframe');
+                const waterIframe = document.querySelector('.water-card .map-wrapper iframe');
+
+                if (airIframe && e.source === airIframe.contentWindow) {
+                    const airSelect = document.getElementById('locationSelect');
+                    if (airSelect && airSelect.value !== String(e.data.id)) {
+                        airSelect.value = e.data.id;
+                        airSelect.dispatchEvent(new Event('change'));
+                    }
+                } else if (waterIframe && e.source === waterIframe.contentWindow) {
+                    const waterSelect = document.getElementById('waterLocationSelect');
+                    if (waterSelect && waterSelect.value !== String(e.data.id)) {
+                        waterSelect.value = e.data.id;
+                        waterSelect.dispatchEvent(new Event('change'));
+                    }
+                }
             }
         });
 
-        // Handle form submission on button click
-        wqiForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            predictWQI();
+        document.addEventListener('DOMContentLoaded', () => {
+            setupDropdown('locationSelect', AIR_LOCATIONS_DATA, INITIAL_AIR_DATA, updateAirCard);
+            const waterLocationSelect = document.getElementById('waterLocationSelect');
+            const wqiForm = document.getElementById('wqi-form');
+
+            // Populate water location dropdown
+            WATER_LOCATIONS_DATA.forEach(loc => {
+                const option = document.createElement('option');
+                option.value = loc.id;
+                option.textContent = loc.full_name;
+                waterLocationSelect.appendChild(option);
+            });
+
+            // Function to trigger a prediction
+            const predictWQI = async () => {
+                const data = {
+                    location_id: waterLocationSelect.value,
+                    month: new Date().getMonth() + 1,
+                    ph: document.getElementById('ph').value,
+                    dissolvedoxygen: document.getElementById('dissolvedoxygen').value,
+                    bod: document.getElementById('bod').value,
+                    cod: document.getElementById('cod').value,
+                    nitrate: document.getElementById('nitrate').value,
+                    fecalcoliform: document.getElementById('fecalcoliform').value
+                };
+                const response = await fetch('/api/predict_wqi', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                updateWaterCardResult(result);
+            };
+
+            // Handle location changes
+            waterLocationSelect.addEventListener('change', () => {
+                const selectedId = waterLocationSelect.value;
+                const selectedData = WATER_LOCATIONS_DATA.find(loc => loc.id == selectedId);
+                if (selectedData) {
+                    updateWaterCard(selectedData);
+                    populateWaterForm(selectedData);
+                    predictWQI(); // Predict automatically when location changes
+                }
+            });
+
+            // Handle form submission on button click
+            wqiForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                predictWQI();
+            });
+
+            // Trigger initial population and prediction for the first location
+            if (WATER_LOCATIONS_DATA.length > 0) {
+                updateWaterCard(WATER_LOCATIONS_DATA[0]);
+                populateWaterForm(WATER_LOCATIONS_DATA[0]);
+                predictWQI();
+            }
         });
 
-        // Trigger initial population and prediction for the first location
-        if (WATER_LOCATIONS_DATA.length > 0) {
-            updateWaterCard(WATER_LOCATIONS_DATA[0]);
-            populateWaterForm(WATER_LOCATIONS_DATA[0]);
-            predictWQI();
-        }
-    });
+    </script>
 
-</script>
-
-{% endblock %}
-
+    {% endblock %}

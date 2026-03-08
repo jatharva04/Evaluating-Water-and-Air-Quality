@@ -6,14 +6,40 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
 <style>
     /* Water-specific color theme */
-    :root { --accent: #3498db; --accent-glow: rgba(52, 152, 219, 0.15); }
-    .section-title::before { background: linear-gradient(135deg, var(--accent), #2980b9); }
+    :root {
+        --accent: #3498db;
+        --accent-glow: rgba(52, 152, 219, 0.15);
+    }
+
+    .section-title::before {
+        background: linear-gradient(135deg, var(--accent), #2980b9);
+    }
+
+    .last-updated {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--muted);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        margin-left: auto;
+    }
+
+    .last-updated i {
+        font-size: 0.8rem;
+        color: var(--accent);
+    }
 </style>
 {% endblock %}
 
 {% block content %}
 <header>
     <h1>🌊 WQI Dashboard — Monthly Forecast</h1>
+    <div class="last-updated"><i class="fas fa-clock"></i> Updated: {{ water_updated_time }}</div>
 </header>
 
 <div class="container">
@@ -22,7 +48,7 @@
         <div class="map-wrap">{{ map_html|safe }}</div>
         <div class="controls">
             <div class="legend">
-                 <span class="dot" style="background:var(--good)"></span> <span>Good</span>
+                <span class="dot" style="background:var(--good)"></span> <span>Good</span>
                 <span class="dot" style="background:var(--moderate)"></span> <span>Satisfactory</span>
                 <span class="dot" style="background:var(--usg)"></span> <span>Poor</span>
                 <span class="dot" style="background:var(--unhealthy)"></span> <span>Very Poor</span>
@@ -35,7 +61,8 @@
             <label class="muted">Location:</label>
             <select id="locationSelect">
                 {% for p in locations %}
-                    <option value="{{ p.id }}" {% if p.full_name == default_location_name %}selected{% endif %}>{{ p.full_name }}</option>
+                <option value="{{ p.id }}" {% if p.full_name==default_location_name %}selected{% endif %}>{{ p.full_name
+                    }}</option>
                 {% endfor %}
             </select>
         </div>
@@ -48,26 +75,13 @@
         <div class="card recommendations">
             <div class="section-title">Health Recommendations</div>
             <div id="recommendations-content">
-                {% if initial_details and initial_details.recommendation and initial_details.recommendation.general %}
-                    <h4>{{ initial_details.recommendation.general.title }}</h4>
-                    <p>{{ initial_details.recommendation.general.advice }}</p>
-                {% else %}
-                    <p class="muted">No recommendations available.</p>
-                {% endif %}
+                <p class="muted">Generating ML health recommendations in background...</p>
             </div>
         </div>
         <div class="card lime-explanation">
             <div class="section-title">LIME: Why this prediction?</div>
             <div id="lime-content">
-                {% if initial_details and initial_details.lime_explanation %}
-                    <ul>
-                        {% for rule in initial_details.lime_explanation %}
-                            <li>{{ rule[0] }}</li>
-                        {% endfor %}
-                    </ul>
-                {% else %}
-                    <p class="muted">No LIME explanation available.</p>
-                {% endif %}
+                <p class="muted">Computing artificial LIME permutations in background...</p>
             </div>
         </div>
     </div>
@@ -76,11 +90,11 @@
         <div class="section-title">Current Predicted WQI</div>
         <div class="locations">
             {% for p in locations %}
-                <div class="loc">
-                    <div><strong>{{ p.full_name }}</strong></div>
-                    <div class="muted">Lat: {{ "%.4f"|format(p.lat) }}, Lon: {{ "%.4f"|format(p.lon) }}</div>
-                    <div>Predicted WQI: <strong>{{ "%.2f"|format(p.wqi) }}</strong> ({{ p.classification }})</div>
-                </div>
+            <div class="loc">
+                <div><strong>{{ p.full_name }}</strong></div>
+                <div class="muted">Lat: {{ "%.4f"|format(p.lat) }}, Lon: {{ "%.4f"|format(p.lon) }}</div>
+                <div>Predicted WQI: <strong>{{ "%.2f"|format(p.wqi) }}</strong> ({{ p.classification }})</div>
+            </div>
             {% endfor %}
         </div>
     </div>
@@ -93,9 +107,9 @@
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1.3.1/dist/chartjs-adapter-luxon.umd.min.js"></script>
 
 <script>
-    const LOCATIONS_DATA = {{ locations|tojson }};
-    const INITIAL_SERIES = {{ chart_series|tojson }};
-    const INITIAL_DETAILS = {{ initial_details|tojson }};
+    const LOCATIONS_DATA = {{ locations| tojson }};
+    const INITIAL_SERIES = {{ chart_series| tojson }};
+    const INITIAL_DETAILS = {{ initial_details| tojson }};
     let wqiChart;
 
     console.log("Chart Series Data Received by Browser:", INITIAL_SERIES);
@@ -103,46 +117,58 @@
 
     function drawWqiChart(series, title) {
         if (!series || series.length === 0) return;
-        const ctx = document.getElementById('wqiChart').getContext('2d');
+        const ctx = document.getElementById('wqiChart');
         if (wqiChart) wqiChart.destroy();
-        series.sort((a, b) => new Date(a.x) - new Date(b.x))
+
+        series.sort((a, b) => new Date(a.x) - new Date(b.x));
 
         wqiChart = new Chart(ctx, {
             type: 'line',
             data: {
                 datasets: [{
                     label: 'WQI Score',
-                    data: series, // ✅ Directly uses {x, y}
+                    data: series, // ✅ Directly using {x, y} points provided by backend
                     borderColor: 'var(--accent)',
                     backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                    pointStyle: 'circle',
+                    pointRadius: 6,
+                    pointHoverRadius: 10,
+                    pointBackgroundColor: 'var(--accent)',
+                    pointBorderColor: '#ffffff',
+                    pointBorderWidth: 2,
                     tension: 0.4,
-                    fill: true
+                    fill: true,
+                    borderWidth: 3
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                parsing: {
-                    xAxisKey: 'x',
-                    yAxisKey: 'y'
-                },
                 plugins: {
                     legend: { display: false },
-                    title: { display: true, text: title, color: '#f8fafc', font: { size: 16 } }
+                    title: { display: true, text: title, color: '#f8fafc', font: { size: 16, weight: '600' }, padding: 20 }
                 },
                 scales: {
                     x: {
                         type: 'time',
-                        time: { unit: 'month', tooltipFormat: 'MMM yyyy' },
-                        ticks: { color: '#94a3b8' },
-                        grid: { color: 'rgba(55, 65, 81, 0.3)' }
+                        time: {
+                            unit: 'month',
+                            tooltipFormat: 'MMMM yyyy',
+                            displayFormats: { month: 'MMM yyyy' }
+                        },
+                        title: { display: true, text: 'Time (Next 6 Months)', color: '#cbd5e1', font: { size: 14, weight: '500' } },
+                        ticks: { color: '#94a3b8', font: { size: 12 } },
+                        grid: { color: 'rgba(55, 65, 81, 0.3)', drawBorder: false }
                     },
                     y: {
-                        title: { display: true, text: 'WQI Score (0-100)', color: '#cbd5e1' },
-                        ticks: { color: '#94a3b8' },
-                        grid: { color: 'rgba(55, 65, 81, 0.3)' }
+                        title: { display: true, text: 'Predicted WQI (0-100)', color: '#cbd5e1', font: { size: 14, weight: '500' } },
+                        ticks: { color: '#94a3b8', font: { size: 12 } },
+                        grid: { color: 'rgba(55, 65, 81, 0.3)', drawBorder: false },
+                        min: 0,
+                        max: 100
                     }
-                }
+                },
+                interaction: { intersect: false, mode: 'index' }
             }
         });
     }
@@ -164,7 +190,7 @@
     }
 
     function updateLimeExplanation(data) {
-        const container = document.getElementById('lime-content'); 
+        const container = document.getElementById('lime-content');
         container.innerHTML = '';
         if (data.lime_explanation?.length) {
             const ul = document.createElement('ul');
@@ -178,6 +204,35 @@
             container.innerHTML = '<p class="muted">No LIME explanation available.</p>';
         }
     }
+    async function fetchWaterLocationDetails(id) {
+        const recsContainer = document.querySelector('.recommendations');
+        const limeContainer = document.querySelector('.lime-explanation');
+        recsContainer.classList.add('loading');
+        limeContainer.classList.add('loading');
+
+        try {
+            const detailsRes = await fetch(`/api/wqi_location_details?id=${id}`);
+            const detailsData = await detailsRes.json();
+            if (detailsData.ok) {
+                updateRecommendations(detailsData);
+                updateLimeExplanation(detailsData);
+            }
+        } catch (error) { console.error("Error fetching details:", error); }
+        finally {
+            recsContainer.classList.remove('loading');
+            limeContainer.classList.remove('loading');
+        }
+    }
+
+    window.addEventListener('message', (e) => {
+        if (e.data && e.data.type === 'marker_click') {
+            const selectEl = document.getElementById('locationSelect');
+            if (selectEl && selectEl.value !== String(e.data.id)) {
+                selectEl.value = e.data.id;
+                selectEl.dispatchEvent(new Event('change'));
+            }
+        }
+    });
 
     document.addEventListener('DOMContentLoaded', () => {
         const locationSelect = document.getElementById('locationSelect');
@@ -185,29 +240,50 @@
         // Set the initial state when the page first loads
         if (INITIAL_DETAILS) {
             drawWqiChart(INITIAL_SERIES, "WQI Forecast — {{ default_location_name }}");
-            updateRecommendations(INITIAL_DETAILS);
-            updateLimeExplanation(INITIAL_DETAILS);
+            fetchWaterLocationDetails(locationSelect.value);
+        }
+
+        // Highlight map pin on initial load
+        const defaultId = document.getElementById("locationSelect").value;
+        const defaultData = LOCATIONS_DATA.find(loc => loc.id == defaultId);
+        if (defaultData) {
+            const mapIframe = document.querySelector('.map-wrap iframe');
+            if (mapIframe) {
+                mapIframe.addEventListener('load', () => {
+                    mapIframe.contentWindow.postMessage({ lat: defaultData.lat, lon: defaultData.lon }, '*');
+                });
+                if (mapIframe.contentWindow) {
+                    mapIframe.contentWindow.postMessage({ lat: defaultData.lat, lon: defaultData.lon }, '*');
+                }
+            }
         }
 
         // Add the event listener for dropdown changes
-        locationSelect.addEventListener("change", async (e) => {
-            const id = e.target.value;
+        document.getElementById('locationSelect').addEventListener('change', async (e) => {
+            const selectedId = e.target.value;
+            const selectedData = LOCATIONS_DATA.find(loc => loc.id == selectedId);
+
+            // Highlight map pin
+            if (selectedData) {
+                const mapIframe = document.querySelector('.map-wrap iframe');
+                if (mapIframe && mapIframe.contentWindow) {
+                    mapIframe.contentWindow.postMessage({ lat: selectedData.lat, lon: selectedData.lon }, '*');
+                }
+            }
+
+            const chartContainer = document.querySelector('.chart-container');
+            chartContainer.classList.add('loading');
+
             try {
-                const forecastRes = await fetch(`/api/wqi_forecast_series?id=${id}`);
+                const forecastRes = await fetch(`/api/wqi_forecast_series?id=${selectedId}`);
                 const forecastData = await forecastRes.json();
                 if (forecastData.ok) {
                     drawWqiChart(forecastData.series, `WQI Forecast — ${forecastData.name}`);
                 }
             } catch (error) { console.error("Error fetching forecast:", error); }
+            finally { chartContainer.classList.remove('loading'); }
 
-            try {
-                const detailsRes = await fetch(`/api/wqi_location_details?id=${id}`);
-                const detailsData = await detailsRes.json();
-                if (detailsData.ok) {
-                    updateRecommendations(detailsData);
-                    updateLimeExplanation(detailsData);
-                }
-            } catch (error) { console.error("Error fetching details:", error); }
+            fetchWaterLocationDetails(selectedId);
         });
     });
 </script>
