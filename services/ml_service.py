@@ -9,10 +9,6 @@ from dateutil.relativedelta import relativedelta
 from concurrent.futures import ThreadPoolExecutor
 from zoneinfo import ZoneInfo
 import warnings
-
-# Suppress the irritating XGBoost serialization warning as we are in development
-warnings.filterwarnings("ignore", category=UserWarning, module="xgboost")
-
 import pandas as pd
 import numpy as np
 import joblib
@@ -22,6 +18,9 @@ import lime.lime_tabular
 import spacy
 
 from config import *
+
+warnings.filterwarnings("ignore", category=UserWarning, module="xgboost")
+
 
 # --- WQI Models & Explainers ---
 wqi_model = None

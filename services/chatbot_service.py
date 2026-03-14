@@ -144,7 +144,7 @@ def get_recommendation_for_aqi_value(value):
     """Returns a specific recommendation based on a numerical AQI value."""
     value = int(value)
     if value <= 50:
-        return "With an AQI of {value}, the air is 'Good'. It's a great day for outdoor activities!"
+        return f"With an AQI of {value}, the air is 'Good'. It's a great day for outdoor activities!"
     elif value <= 100:
         return f"With an AQI of {value}, the air is 'Satisfactory'. It's generally safe to be outside."
     elif value <= 200:
