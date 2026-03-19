@@ -631,6 +631,7 @@
             } else {
                 document.getElementById('result-wqi-score').textContent = "Error";
                 document.getElementById('result-classification').textContent = result.error || "Prediction failed.";
+                alert(result.error || "Prediction failed.");
             }
         }
 

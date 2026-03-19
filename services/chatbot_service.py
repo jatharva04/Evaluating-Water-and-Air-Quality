@@ -170,8 +170,10 @@ def get_wqi_response_string(city_name):
         return f"I'm sorry, I couldn't find water quality data for '{city_name}'."
         
     all_water_data = get_all_water_data()
-    water_info = next((loc for loc in all_water_data if loc["full_name"].lower() == matched_city.lower()), None)
-    
+    water_info = next((
+        loc for loc in all_water_data 
+        if matched_city.lower() in loc["full_name"].lower().strip()
+    ), None)
     if water_info:
         return (f"Currently, the predicted ML Water Quality Index (WQI) for **{water_info['full_name']}** is **{water_info['wqi']:.0f}/100**.\n\n"
                 f"This classifies the location as **'{water_info['classification']}'** "

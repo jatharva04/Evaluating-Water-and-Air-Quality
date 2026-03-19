@@ -12,16 +12,42 @@ api_bp = Blueprint('api', __name__)
 def api_predict_wqi():
     data = request.json
     try:
-        location_id = int(data.get("location_id"))
-        location_info = get_all_water_data()[location_id]
+        try:
+            location_id = int(data.get("location_id"))
+        except (TypeError, ValueError):
+            return jsonify({"ok": False, "error": "Invalid location ID"}), 400
+
+        all_locations = get_all_water_data()
+
+        if location_id < 0 or location_id >= len(all_locations):
+            return jsonify({"ok": False, "error": "Location ID out of range"}), 400
+
+        location_info = all_locations[location_id]
         
+        try:
+            ph = float(data.get("ph"))
+            dissolvedoxygen = float(data.get("dissolvedoxygen"))
+            bod = float(data.get("bod"))
+            cod = float(data.get("cod"))
+            nitrate = float(data.get("nitrate"))
+            fecal = float(data.get("fecalcoliform"))
+        except (TypeError, ValueError):
+            return jsonify({"ok": False, "error": "Invalid numeric input"}), 400
+
+        # Basic range validation 
+        if not (0 <= ph <= 14):
+            return jsonify({"ok": False, "error": "pH must be between 0 and 14"}), 400
+        
+        if dissolvedoxygen < 0 or bod < 0 or cod < 0 or nitrate < 0 or fecal < 0:
+            return jsonify({"ok": False, "error": "Environmental values cannot be negative"}), 400
+
         features = {
-            "pH": float(data.get("ph")),
-            "dissolvedoxygen": float(data.get("dissolvedoxygen")),
-            "bod": float(data.get("bod")),
-            "cod": float(data.get("cod")),
-            "nitrate": float(data.get("nitrate")),
-            "FecalColiform": float(data.get("fecalcoliform")),
+            "pH": ph,
+            "dissolvedoxygen": dissolvedoxygen,
+            "bod": bod,
+            "cod": cod,
+            "nitrate": nitrate,
+            "FecalColiform": fecal,
             "Year": datetime.now().year,
             "Month": int(data.get("month")),
             "latitude": location_info["lat"],
@@ -51,10 +77,12 @@ def api_predict_wqi():
 def api_chat():
     """API endpoint for the chatbot to receive and respond to messages."""
     load_all_models_and_data()
-    user_input = request.json.get("message", "")
-    session_data = request.json.get("session_data", {}) 
+    user_input = request.json.get("message", "").strip()
+    #prevention if user enters a blank space as message to chatbot
     if not user_input:
-        return jsonify({"response": "Sorry, I didn't receive a message."})
+        return jsonify({"response": "Please enter a valid message."})
+    session_data = request.json.get("session_data", {}) 
+
     
     # 1. Get the intent from the Textcat model
     doc_textcat = textcat_model(user_input)
